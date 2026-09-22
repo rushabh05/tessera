@@ -259,3 +259,40 @@ reporting.
 Wrote `assert w_start == 60` for a window computed as `floor(120/60)*60`, which is
 120, not 60. Caught immediately because the test failed rather than passed
 silently — the value the test asserted was simply wrong, not the code under test.
+
+## P3 finding: a second self-found leakage bug (2026-09-22)
+
+### C9. Calendar-position features caused severe temporal leakage
+
+Building M3 (identity features), a first version included absolute calendar
+position derived from the window's epoch timestamp: hour-of-day, day-of-week,
+is-weekend, minute-of-hour. Measured on real data (M1+M2+M3 combined, 3 hosts):
+
+| | R0 (random) | R1 (chronological) | gap |
+|---|---|---|---|
+| with calendar features | 0.9998 | 0.5156 | 0.4843 |
+| without | 1.0000 | 0.9813 | 0.0187 |
+
+`hour_of_day` was the single most important feature by a wide margin (feature
+importance 572, next-highest 410). Confirmed by direct ablation (identical seed,
+identical split, features included vs. excluded) — not merely observed in one run.
+
+The mechanism is structural, not a training bug: in a single 4-6 day capture,
+"hour 3 on day 2022-01-24" occurs exactly once. Under a random split, that exact
+calendar position of a held-out attack window is present verbatim in training
+(shifted to a different, arbitrary row), so a tree model learns "attacks cluster
+around hour X in this capture" rather than any transferable signal. This is the
+same failure class as F1 (duplicate-row leakage) but through a different
+mechanism — feature-level rather than row-level identity leakage — and it is
+worse: F1's gap was 0.29 points; this one was 0.48.
+
+Fixed by removing the four calendar features from `m3_identity.py` entirely
+(kept: `host_bucket`, hashed and non-reversible, and `n_sources_active`). Locked
+in two ways: a test that inspects `M3_FEATURE_NAMES` for anything
+calendar-shaped, and a signature-level guard — `window_identity_vector` no
+longer accepts a `window_start` parameter at all, so a future call site cannot
+silently resurrect the leaky computation by passing a timestamp back in.
+
+This is exactly the class of self-caught error `NEGATIVE_RESULTS.md` exists to
+record: found by testing the project's own pipeline against real data with the
+same rigor applied to auditing the base paper, not exempted from it.

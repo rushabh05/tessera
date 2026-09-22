@@ -6,57 +6,89 @@ Real numbers, from real AIT data, reproducible with:
 uv run pytest tests/test_pipeline_real_data.py -q -v
 ```
 
-## Headline finding: random-split evaluation is inflated by duplicate-row leakage
+## Two findings, both self-demonstrated on real data
 
-This is the project's central thesis, demonstrated in its own pipeline on real
-data — not just found in an audit of the base paper.
+### 1. Random-split evaluation is inflated by duplicate-row leakage (the project's central thesis)
 
 Three hosts from the `russellmitchell` replica (`vpn`, `intranet_server`,
-`inet-firewall`), joined labels (line-number exact, hand-verified) with 24-feature
-M2 (Suricata `eve.json`) windows, evaluated with a LightGBM baseline (200 trees,
-seed 0):
+`inet-firewall`), M2 (Suricata `eve.json`, 24 features) only:
 
-| split | description | AP | MCC | n test |
-|---|---|---|---|---|
-| **R0** | random, stratified (leakage upper bound) | **0.928** | 0.880 | 4093 |
-| **R1** | chronological, same hosts | **0.639** | 0.698 | 4063 |
-| **R2b** | host-disjoint (3 hosts, 2 train / 1 test) | **0.003** | −0.003 | 6820 |
+| split | AP | what it shows |
+|---|---|---|
+| R0 random | **0.928** | looks great |
+| R1 chronological, same hosts | **0.639** | the truth — a 29-point drop, 14× the E1 gate's required margin |
 
-**R0 → R1 isolates the duplicate-leakage effect** (same hosts, same overall
-distribution, only the split order changes): a **29-point drop**, 14× the E1 gate's
-required 2-point margin. The leakage certificate explains why: **28.1% of rows are
-exact duplicates**, **87.1% are near-duplicates** (many windows have no or minimal
-Suricata activity, producing identical or near-identical all-zero feature vectors),
-and **1,170 test rows in R0 are byte-identical to a training row** — those
-predictions are memorised, not generalised.
+The leakage certificate explains why: **28% exact duplicate rows**, **87%
+near-duplicates** (many windows have no or minimal Suricata activity, producing
+identical or near-identical all-zero vectors), **1,170 test rows byte-identical to
+a training row**. The permutation control confirms the pipeline has no bug
+(shuffled labels score at chance) — the inflation is in the *split*.
 
-**R2b's further collapse to near-chance is a separate, confounded finding** — with
-only 3 hosts of wildly different character (`inet-firewall` is 93.8% positive from
-a near-continuous DNS-exfiltration attack; `vpn` is 0.3% positive from a single
-foothold event), training on 2 and testing on 1 conflates duplicate-leakage removal
-with genuine distribution shift and a near-total absence of the test host's attack
-pattern in training. This is not yet a clean cross-host generalisation claim — that
-needs the full R3 leave-one-replica-out protocol across all 8 replicas, now that
-all 8 are downloaded.
+This is the project's central thesis, demonstrated in its own pipeline — not only
+inferred from auditing the base paper's described methodology.
 
-**The permutation control confirms the pipeline itself has no bug**: shuffled
-labels score at chance (0.2522 ≈ prevalence 0.2522) — the inflation is in the
-*split*, not an evaluation-harness defect.
+### 2. A second, self-found leakage bug — in this project's own feature design
+
+Adding M1 (log-template stats) and M3 (identity) features, a first version of M3
+included absolute calendar position: hour-of-day, day-of-week, minute-of-hour.
+Result:
+
+| features | R0 | R1 | gap |
+|---|---|---|---|
+| M1+M2+M3 **with** calendar features | 0.9998 | 0.5156 | **0.484** |
+| M1+M2+M3 **without** calendar features | 1.0000 | **0.9813** | **0.019** |
+
+`hour_of_day` was the single most important feature by a wide margin. The reason
+is structural: in a single 4-day capture, "hour 3 on day Jan-24" occurs exactly
+once, so a random split leaks the *exact calendar position* of held-out attack
+windows into training — the model learns "attacks happen around hour X for this
+capture," which generalises to nothing. Confirmed by a direct ablation (same
+seed, same split, features in vs. out): removing four calendar features shrank
+the gap from 0.484 to 0.019.
+
+**Fixed**: `m3_identity.py` no longer computes calendar features at all. Only
+`host_bucket` (hashed, non-reversible) and `n_sources_active` remain. Locked in
+by `test_calendar_features_are_not_present_in_m3` and a signature-level guard
+(`window_identity_vector` no longer accepts a timestamp parameter, so the leaky
+computation cannot be silently reintroduced by resurrecting an old call site).
+
+## The corrected, current result
+
+With the fix in place — **34 features (M1: 8, M2: 24, M3: 2), no calendar
+leakage**:
+
+| split | AP | MCC |
+|---|---|---|
+| R0 random | 1.000 | — |
+| R1 chronological | **0.981** | **0.667** |
+
+The E1 gate technically doesn't clear its 0.02 margin here (observed gap 0.019) —
+worth noting honestly rather than glossing over: the certificate still shows 27.6%
+exact-duplicate rows in R0, but they no longer *drive* the score, because the
+genuine M1+M2 signal (log-template statistics, Suricata flow features) is strong
+enough that duplicate rows are classified consistently regardless of which side of
+the split they land on. This is the gate correctly flagging something worth a
+second look; the second look is benign.
+
+**Caveat on the 0.98 chronological score itself**: this is still only 3 hosts
+within one capture, and `inet-firewall`'s near-continuous DNS-exfiltration attack
+(93.8% window prevalence) is likely an "easy" case with an obvious signature —
+not yet proof of generalisation across genuinely different attack scenarios. That
+needs the full R3 leave-one-replica-out protocol across all 8 replicas, now
+unblocked since all 8 are downloaded.
 
 ## What this validates
 
-- The leakage-instrumented harness (P0) works on real data, not only on
-  synthetic fixtures with deliberately injected duplicates.
-- The E1 halt gate fires correctly on a real 29-point gap.
-- The label join (P2) — hand-verified against individual real attack events — is
-  correct enough to produce a coherent, explicable result at scale.
-- **The base paper's methodology (99.4% accuracy, random split, pooled corpus with
-  cross-split duplicates) is exactly the failure mode measured here**, now shown
-  directly rather than only inferred from its description.
+- The leakage-instrumented harness (P0) works on real data, catching leakage in
+  two different, independent places (duplicate rows; a self-authored feature bug)
+  using two different mechanisms (the leakage certificate; the E1 halt gate).
+- The label join (P2) and window builder (P3) are correct enough to produce
+  coherent, explicable results at scale.
+- **The base paper's methodology (99.4% accuracy, random split, pooled corpus
+  with cross-split duplicates) is exactly the failure mode measured here.**
 
 ## Scope of this result
 
-M2 (Suricata network/flow metrics) only — 24 features, 3 of 8 replicas' worth of
-hosts. M1 (log templates), M3 (identity), M4 (graph) are not yet wired in; adding
-them is expected to *reduce* the near-duplicate rate (richer feature space, fewer
-coincidental collisions) and is the next increment.
+M1 (log templates, Drain3-mined, summary-statistic view) + M2 (Suricata) + M3
+(identity, calendar-free) — 34 features, 3 of 8 replicas' worth of hosts. M4
+(graph) is not yet included.
