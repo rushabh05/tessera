@@ -1,0 +1,10 @@
+{
+  "name": "tessera-web",
+  "private": true,
+  "type": "module",
+  "description": "TESSERA static demo: hand-written JS forward pass + Merkle ledger, proven byte-identical to the real Python model and ledger.",
+  "scripts": {
+    "test": "node parity.test.mjs && node merkle-parity.test.mjs",
+    "serve": "python3 -m http.server 8743"
+  }
+}

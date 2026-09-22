@@ -28,7 +28,7 @@ class SmallMLPEncoder(nn.Module):
         self.net = nn.Sequential(
             nn.Linear(in_dim, hidden_dim),
             nn.GroupNorm(groups, hidden_dim),
-            nn.GELU(),
+            nn.GELU(approximate="tanh"),
             nn.Linear(hidden_dim, out_dim),
         )
 

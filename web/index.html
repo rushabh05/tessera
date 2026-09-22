@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TESSERA — Live Cloud Anomaly Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>TESSERA</h1>
+    <p class="subtitle">A real, trained multimodal anomaly detector running entirely in your browser — no server, nothing pre-computed for this page.</p>
+    <div class="badge-row">
+      <span class="badge">Real model, hand-ported to JS (byte-parity proven)</span>
+      <span class="badge">Real tamper-evident ledger (RFC 6962)</span>
+      <span class="badge" id="n-params-badge"><span id="n-params">…</span> parameters</span>
+      <span class="badge">Zero servers · zero cost</span>
+    </div>
+    <div class="notice" id="boot-error" hidden></div>
+    <div class="notice">
+      <strong>What you're looking at, honestly:</strong> the model below is the
+      exact model trained and evaluated in this project (see <code>RESULTS.md</code>
+      for real numbers on real held-out data — average precision ~0.996 across
+      independently randomised scenario replicas). Every score you see on this
+      page is computed <em>live, right now, in your browser</em>, using a
+      hand-written JavaScript forward pass verified to match the trained
+      PyTorch model to within 1e-7 (<code>web/parity.test.mjs</code>).
+      The <strong>60 example windows</strong> below are <strong>synthetic</strong> —
+      generated from summary statistics, never real captured log data (the
+      source dataset's licence forbids redistributing derived data) — so
+      treat their scores as an illustration of the mechanism, not a validation
+      of accuracy. That validation lives in the repository's test suite,
+      against real data.
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Windows <span class="stat">(<span id="n-windows">…</span> synthetic examples · ledger root <code id="root-hex" style="font-size:0.7rem"></code>)</span></h2>
+      <div id="window-list"></div>
+    </section>
+
+    <section class="grid-2">
+      <div class="panel">
+        <h2>Live inference</h2>
+        <p id="detail-empty">Select a window on the left.</p>
+        <div id="detail-content" hidden>
+          <div class="detail-header">
+            <div>
+              <div id="detail-host" style="color:var(--text-dim);font-size:0.85rem"></div>
+              <code id="detail-id"></code>
+            </div>
+            <div style="text-align:right">
+              <div class="detail-score-big" id="detail-score"></div>
+              <div id="detail-verdict"></div>
+            </div>
+          </div>
+
+          <h3 style="margin:0.5rem 0 0.25rem;font-size:0.9rem">Modality attribution</h3>
+          <p style="margin:0 0 0.5rem;font-size:0.8rem;color:var(--text-dim)">
+            Toggle a modality off to see the model re-score <em>live</em>, using only the remaining sources —
+            this is the same availability-masking mechanism the model uses for a genuinely offline telemetry source.
+          </p>
+          <div id="attribution-bars"></div>
+          <div class="caveat">
+            Caveat, measured and documented (see <code>NEGATIVE_RESULTS.md</code>):
+            this model's own attribution weights were found to <strong>understate</strong>
+            a modality's true importance in at least one real test — treat these bars as
+            a signal the model is using, not proof of what matters most. A proper
+            ablation study (also in the repo) is the reliable measure.
+          </div>
+          <div id="parity-note" hidden></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Tamper-evident ledger</h2>
+        <p id="merkle-empty">Select a window to inspect its ledger entry.</p>
+        <div id="merkle-content" hidden>
+          <p style="font-size:0.85rem;color:var(--text-dim)">
+            Every verdict is committed to a Merkle transparency log — the same
+            construction used by Certificate Transparency (RFC 6962). The log
+            never stores an IP address, username, or URL: only a hash.
+          </p>
+          <div class="field-row">
+            <code id="merkle-window-id"></code>
+            <button class="action" id="verify-inclusion-btn">Verify inclusion proof</button>
+          </div>
+          <div id="inclusion-result" hidden></div>
+
+          <h3 style="margin:1rem 0 0.25rem;font-size:0.9rem">Try tampering with it</h3>
+          <p style="font-size:0.8rem;color:var(--text-dim)">
+            Edit this verdict's score as if you were an operator quietly editing history,
+            then watch what an auditor holding the original root would detect.
+          </p>
+          <div class="field-row">
+            <label style="font-size:0.85rem">new score:</label>
+            <input type="text" id="tamper-score-input" />
+            <button class="action" id="tamper-btn">Tamper &amp; check</button>
+          </div>
+          <div id="tamper-result" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>What this is, and isn't</h2>
+      <p style="font-size:0.88rem;color:var(--text-dim)">
+        TESSERA audits and rebuilds a published cloud-anomaly-detection framework
+        (Nagarjun &amp; Rajkumar, IEEE Access 2024), finds that several of its core
+        equations aren't implementable as specified and that its headline 99.4%
+        accuracy comes from a leakage-prone evaluation, and replaces it with a
+        genuinely multimodal detector evaluated honestly — chronological and
+        cross-replica splits, a full leakage certificate, and negative results
+        reported alongside positive ones. Four small encoders (log templates,
+        network metrics, identity, graph structure) feed a Gated Multimodal
+        Unit that handles a missing telemetry source by design. Full write-up,
+        source, and every reported number's derivation: see the repository.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    Model calibration statistics derived from the AIT Log Data Set V2.1
+    (Landauer et al., CC BY-NC-SA 4.0) — summary statistics only; no raw log
+    data is included on this page. This page runs entirely client-side: no
+    data you interact with here is sent anywhere.
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

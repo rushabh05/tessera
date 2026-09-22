@@ -357,3 +357,41 @@ never presented as ground truth for "what the model used" — in the report, the
 demo, or the viva. A proper per-modality ablation, not the gate, is this
 project's only reliable importance measure. Locked in by
 `test_gmu_attribution_does_not_match_naive_ablation_importance`.
+
+## Demo finding: a real cross-language hashing bug in the production ledger (2026-09-23)
+
+### C10. `Verdict.canonical()`'s score field hashed differently in Python vs JavaScript
+
+Building the browser demo's JS Merkle port (`web/js/merkle.js`) and generating
+real cross-language parity vectors surfaced a genuine bug in the **production**
+ledger code, not a demo-only issue: `Verdict.canonical()` rounded `score` to a
+Python float (`round(float(self.score), 6)`), then relied on `json.dumps` to
+serialise it. Python's `json.dumps(0.0)` renders `"0.0"` — preserving the
+trailing zero that marks it as a float — while JavaScript has no int/float
+distinction, and `JSON.stringify(0.0)` renders `"0"`. Any verdict with a score
+that rounds to a whole number (0.0 — a maximally-confident benign prediction —
+or 1.0, both real, expected values, not edge cases) would therefore hash to
+**two different leaves** depending on which language recomputed it, silently
+defeating the entire point of a ledger this project explicitly designed to be
+verified across languages (Python producing it, JavaScript checking it in a
+browser).
+
+Caught by generating real Python-computed Merkle roots and reproducing them in
+Node.js: the first parity run failed outright (`root mismatch`), traced to a
+single-field diff (`"score":0.0` vs `"score":0`) by comparing canonical bytes
+side by side before touching the tree logic at all.
+
+**Fixed**: `score` is now formatted as a fixed-precision string
+(`f"{round(float(self.score), 6):.6f}"` → `"0.000000"`), removing the ambiguity
+entirely — both languages serialise the same string identically, so there is
+no float-formatting convention left to diverge. Verified: 11/11 real inclusion
+proofs match Python exactly after the fix, including deliberate whole-number
+scores at two positions. Regression-tested in Python
+(`test_verdict_canonical_cross_language.py`) and locked into the JS parity
+suite (`web/merkle-parity.test.mjs`).
+
+This is the same category of error the project has caught in itself
+repeatedly (calendar-feature leakage, the empty per-host prevalence report,
+the misleading GMU attribution): a mechanism assumed correct because it
+"obviously" round-trips through JSON, checked against independent evidence —
+in this case, an actual second-language implementation — rather than trusted.

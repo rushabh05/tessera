@@ -3,7 +3,13 @@ Multimodal Unit fusion (availability-aware), one MLP head.
 
 Deliberately simple, per the plan's own explicit cut: no evidential/Dempster
 head (that is TESSERA-EV, cut from required scope), no per-token sequence
-encoders (TCN/autoencoder) over raw events - the P3 pipeline already reduces
+encoders (TCN/autoencoder) over raw events. Every GELU in this model uses the
+TANH APPROXIMATION (`approximate='tanh'`), not PyTorch's default exact-erf
+form: there is no clean, dependency-free erf in JavaScript, and the whole
+credibility of a browser demo rests on the JS forward pass matching this
+model's real weights exactly, not approximately - training with the identical
+closed-form tanh formula on both sides removes that mismatch entirely rather
+than approximating around it - the P3 pipeline already reduces
 each modality to a small real feature vector (M1: 8-dim template statistics,
 M2: 24-dim Suricata aggregates, M3: 2-dim identity, M4: 8-dim graph structure),
 and this model's encoders operate on THOSE vectors, not on raw sequences. This
@@ -57,7 +63,7 @@ class _TesseraBaseNet(nn.Module):
         self.fusion = GatedMultimodalUnit(N_MODALITIES, embed_dim)
         self.head = nn.Sequential(
             nn.Linear(embed_dim, hidden_dim),
-            nn.GELU(),
+            nn.GELU(approximate="tanh"),
             nn.Dropout(0.2),
             nn.Linear(hidden_dim, 1),
         )

@@ -153,16 +153,66 @@ claim would need attack scenarios AIT does not provide.
   and its own explanation mechanism was checked against independent evidence
   rather than trusted, the same rigor applied everywhere else in this project.
 
+## 5. The live demo, and two more bugs it surfaced
+
+`web/` is a static, zero-dependency, zero-cost, always-on demo: a hand-written
+JavaScript reimplementation of TESSERA-base's forward pass and the RFC 6962
+Merkle ledger, both **proven** — not assumed — to match the real Python
+implementations:
+
+```bash
+cd web && npm test
+#   node parity.test.mjs        -> 40/40 real golden vectors, max delta 4.4e-7
+#   node merkle-parity.test.mjs -> 11/11 real inclusion proofs match Python exactly
+```
+
+Verified live in the browser too: toggling a modality off recomputes the score
+in real time (a real window's score dropped from 7.8% to 0.0% when "log
+templates" was switched off), and the tamper demo shows all three properties
+live — editing a stored verdict changes the root, the *original* proof still
+verifies against the *original* retained root, and the *edited* entry's own
+proof does not.
+
+**Building it surfaced two more real bugs, both fixed at the source, not
+worked around in the demo:**
+
+- **A genuine cross-language hashing bug in the production ledger.**
+  `Verdict.canonical()` rounded `score` to a Python float and relied on
+  `json.dumps` to serialise it — but Python renders a whole-number float with
+  its trailing zero (`0.0`), while JavaScript has no int/float distinction and
+  renders the same value as `0`. A verdict with a score that happens to round
+  to exactly 0.0 or 1.0 (both real, expected values, not edge cases) would
+  therefore hash to **two different leaves** depending on which language
+  recomputed it — silently defeating the entire point of a ledger explicitly
+  designed to be cross-language verifiable. Caught immediately: the first
+  real parity run failed outright on a root mismatch, traced to this single
+  field by comparing canonical bytes side by side. Fixed by formatting
+  `score` as a fixed-precision string (`"0.000000"`), which both languages
+  serialise identically. Regression-tested in Python and locked into the JS
+  parity suite.
+- **The synthetic demo data generator initially made the model useless.**
+  A first version sampled each of the 42 features independently from a
+  clipped Gaussian calibrated on real per-class summary statistics; several
+  features (byte/packet counts) have std >> mean — the signature of a heavy
+  right-skewed real-world distribution — so the huge variance swamped the
+  class-conditional signal entirely (25% prediction accuracy against the
+  synthetic label, exactly chance). Switching to log-normal sampling helped
+  but didn't fully fix it; the real cause was `host_bucket` (a categorical
+  hashed host identifier, real range [10, 47]) being sampled as an arbitrary
+  small integer (0/1/2) — wildly out-of-distribution input that saturated
+  every prediction near 1.0 regardless of the other 41 features. Fixed by
+  computing the real hash value for the actual training hostnames (generic
+  role names, not licensed data) rather than an arbitrary substitute.
+
 ## Scope of these results
 
 All four modalities: M1 (log templates, Drain3-mined, summary-statistic view),
 M2 (Suricata flow/alert/DNS/HTTP/TLS aggregates), M3 (identity, calendar-free),
 M4 (graph — destination-subnet peer structure with cross-window history) — 42
 features, a fixed 3-host/4-source subset applied identically across all 8
-downloaded replicas. Full leave-one-replica-out is complete (§3). Not yet done:
-extending beyond this fixed host/source subset (more of the ~70 file types per
-replica), and the neural TESSERA-base model (GMU fusion) — everything so far
-uses LightGBM as the baseline.
+downloaded replicas. Full leave-one-replica-out is complete (§3), the neural
+TESSERA-base model matches the tuned classical baseline (§4), and a working,
+license-safe live demo is complete and verified end to end (§5).
 
 ## 4. TESSERA-base: the real neural model, and an honest limit on its explanations
 

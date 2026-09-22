@@ -23,7 +23,7 @@ class GatedMultimodalUnit(nn.Module):
         self.embed_dim = embed_dim
         self.gate_net = nn.Sequential(
             nn.Linear(n_modalities * embed_dim + n_modalities, 2 * n_modalities),
-            nn.GELU(),
+            nn.GELU(approximate="tanh"),
             nn.Linear(2 * n_modalities, n_modalities),
         )
 

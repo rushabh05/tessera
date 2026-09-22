@@ -253,12 +253,28 @@ class Verdict:
     uncertainty: float | None = None
 
     def canonical(self) -> dict:
-        """The exact dict that gets hashed. Field order is fixed for determinism."""
+        """The exact dict that gets hashed. Field order is fixed for determinism.
+
+        ``score`` is formatted as a FIXED-PRECISION STRING, not a bare JSON
+        number. Found live while building the browser demo's JS ledger port:
+        Python's ``json.dumps`` renders a whole-number float with its trailing
+        zero (``0.0`` -> the text ``"0.0"``), while JavaScript has no int/float
+        distinction and ``JSON.stringify`` renders the identical value as
+        ``"0"`` - so a verdict with a score that happens to round to a whole
+        number (score exactly 0.0 is a real case: a maximally-confident benign
+        prediction) would hash to two DIFFERENT leaves depending on which
+        language recomputed it. A bare float is therefore never safe to hash
+        across a language boundary this ledger is explicitly designed to be
+        verified across (see web/js/merkle.js); a fixed-width string removes
+        the ambiguity because both languages serialise the same string
+        identically. Verified: `web/merkle-parity.test.mjs` reproduces the
+        real Python ledger's roots exactly using this format.
+        """
         return {
             "window_id": self.window_id,
             "host_hash": self.host_hash,
             "ts_bucket": self.ts_bucket,
             "verdict": int(self.verdict),
-            "score": round(float(self.score), 6),
+            "score": f"{round(float(self.score), 6):.6f}",
             "model_git_sha": self.model_git_sha,
         }
