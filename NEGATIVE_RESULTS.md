@@ -207,3 +207,32 @@ Fixed: `inspect_without_extracting` now raises a typed `IncompleteDownloadError`
 and `plan_all_replicas` catches it per-replica and continues the scan rather than
 aborting on one bad file. Regression test constructs a truncated zip by hand and
 asserts the scan still completes.
+
+### C7. The first coverage-table implementation was itself badly diluted
+
+Building the per-file-type coverage table (P2 exit criterion), the first version
+counted every unique filename under `gather/` as a distinct "file type" — 334
+"types" for russellmitchell, giving a coverage fraction of 2.4%. Two real inflation
+sources, both fixed:
+
+1. **Date-stamped per-day monitoring exports** (`2022-01-22-system.filesystem.log`,
+   `2022-01-23-system.filesystem.log`, ...) were each counted as a distinct type,
+   when they are the same signal on different days — the same defect class as an
+   unrecognised rotation suffix. Fixed by stripping a leading `YYYY-MM-DD-` prefix
+   alongside the existing trailing-rotation-suffix handling.
+2. **Decoy documents** (`2010_invoices.xlsx` ... one per year, planted by the
+   `dnsteal` exfiltration scenario) and the **attacker's own capture host**
+   (`attacker_0/`) were counted as telemetry file types. Neither is something a
+   real deployment's defender-side telemetry would collect. Excluded.
+
+After both fixes: 334 → **69–70** file types (still far more than the plan's rough
+"~20" estimate — a useful correction in itself), of which **7 are labelled (10.1%
+by type, 4.3% by (host, type) pair)**. The plan's original "~8 of ~20 (~40%)"
+estimate was too generous by a factor of 4; the real coverage is thinner than
+assumed, which *sharpens* rather than weakens the C2 confound this table exists to
+quantify.
+
+Two granularities are now reported side by side, because they answer different
+questions: file-type coverage (close to the plan's original framing) and
+(host, type)-pair coverage (the resolution the C2 missing-modality experiment
+actually operates at, since availability is a per-host property).
