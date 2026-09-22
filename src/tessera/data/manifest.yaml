@@ -6,12 +6,12 @@ files:
     filename: fox_no-pcaps.zip
     url: https://zenodo.org/records/19483937/files/fox_no-pcaps.zip
     licence: CC-BY-NC-SA-4.0
-    sha256: null
-    size_bytes: null
-    retrieved_utc: null
+    sha256: 8d71d31a31df469d836c80bdbfdc35da566e90322cf9ae490233e176a0c88d49
+    size_bytes: 688586900
+    retrieved_utc: '2026-09-22T11:38:40+00:00'
     unobtainable: false
     unobtainable_reason: null
-    notes: AIT Log Data Set V2.1, Zenodo record 19483937. Download in progress / pending hash pin.
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937.
   ait_harrison_no_pcaps:
     dataset: ait
     filename: harrison_no-pcaps.zip
