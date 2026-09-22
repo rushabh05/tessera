@@ -122,3 +122,88 @@ workaround, still deadlocks; setting LightGBM's own `num_threads=1` still segfau
 Consequence: CPU torch is single-threaded, so parallelism comes from running
 configurations as separate processes (`--multirun`), not threads. Training is on MPS,
 where the bound is irrelevant.
+
+## P1 findings (measured against real AIT data, 2026-09-22)
+
+### F3. Unpacking all eight AIT bundles simultaneously would exceed free disk
+
+Measured exactly on the smallest bundle (`russellmitchell_no-pcaps.zip`, 522,084,364
+bytes): unpacked size is **7,247,563,244 bytes — a 13.88× expansion ratio**, read from
+the zip's central directory with no extraction needed (`unzip -l` totals; confirmed
+identical via a real extraction of the `gather/`+`labels/` subset: 6.6 GB on disk).
+
+Projecting that ratio across all eight zip sizes: **~87.3 GB unpacked**, against ~87 GB
+free on this machine. Unpacking all eight at once would consume essentially all free
+disk, leaving nothing for Parquet intermediates or template caches.
+
+This is not a hypothetical risk the plan flagged defensively — it is a hard
+architectural constraint, now implemented as such in `tessera/data/ait/unpack.py`:
+the raw tier holds **at most one testbed's unpacked files at a time**
+(`extract → caller processes → cleanup`), never all eight. The zip archives
+themselves (6.3 GB total) stay resident as the canonical hashed source; their
+unpacked contents never coexist.
+
+### F4. The label format is line-number references, not log-line copies
+
+`labels/<host>/<relpath>` files are JSONL: `{"line": N, "labels": [...], "rules":
+{...}}`, one record per *labelled* line, keyed by 1-indexed line number in the
+corresponding raw file at `gather/<host>/<relpath>`. Absence of a line number =
+benign. Verified against `vpn/logs/openvpn.log`: raw file has 5537 lines, 28 are
+labelled, line 4331 is exactly the attacker VPN event the label predicted (`TLS:
+Initial packet from ... sid=62b69fbd`), and line 1 (unlabelled) is an unrelated
+benign line. The join mechanic is simple and exact — no fuzzy matching needed.
+
+### F5. Exactly 8 labelled files across 5 hosts in russellmitchell — and the
+system-monitoring finding is sharper than first estimated
+
+Complete, non-truncated inventory from the zip's central directory:
+
+| File | Host | Size |
+|---|---|---|
+| `dnsmasq.log` | inet-firewall | 11.2 MB |
+| `audit/audit.log` | internal_share | 376 B |
+| `apache2/...access.log.2` | intranet_server | 1.6 MB |
+| `apache2/...error.log.2` | intranet_server | 9.7 KB |
+| `audit/audit.log` | intranet_server | 2.4 KB |
+| `auth.log` | intranet_server | 2.5 KB |
+| `logstash/.../2022-01-24-system.cpu.log` | monitoring | 7.9 KB |
+| `openvpn.log` | vpn | 4.3 KB |
+
+The earlier plan text said "system-monitoring logs are not among the labelled file
+types" — **not quite right**. There is a sliver of coverage: one CPU-metric log, for
+**one host (`intranet-server`), one day (`2022-01-24`)**, out of a 4-day capture
+across roughly 7 monitored hosts (~28 possible host-days). That is **1 of ~28**, which
+if anything *sharpens* rather than contradicts the confound this project flags for
+C2: system-monitoring label coverage is present but vanishingly thin, and any
+per-file-type coverage table (P2 exit criterion) must report this exactly, not as a
+flat zero.
+
+### F6. Four distinct timestamp conventions, confirmed and now handled
+
+Real samples (not synthetic) from the bundle:
+
+| Source | Format | Sample |
+|---|---|---|
+| `auth.log`, `dnsmasq.log` | syslog, **no year** | `Jan 23 06:25:05` |
+| `apache2` access/error | CLF, year + UTC offset | `[23/Jan/2022:06:36:13 +0000]` |
+| `audit.log` | Unix epoch **embedded inside** `msg=` | `audit(1642724221.475:149)` |
+| `openvpn.log` | ISO-like, no timezone marker | `2022-01-21 00:09:11` |
+| `eve.json` (Suricata) | RFC3339 + microseconds | (field `timestamp`) |
+
+Implemented in `tessera/data/ait/timestamps.py`, with the year for syslog-format
+lines taken explicitly from `dataset.yaml`'s `start` field rather than defaulting to
+"now" — the sharpest hazard in that format. The cross-source anchor test the plan
+required (`a known event visible in two sources must land in the same window`) is
+implemented and passes against both a constructed pair and a real pair from the
+bundle (`auth.log` / `dnsmasq.log`, both `Jan 23 06:25:05`, delta 0.0s).
+
+### C6. `plan_all_replicas` crashed on a real in-progress download
+
+While downloading the remaining 7 bundles in the background, a test run of
+`plan_all_replicas()` hit a raw `zipfile.BadZipFile` on `harrison_no-pcaps.zip`,
+which was mid-write at the time. A truncated file is exactly what a killed
+download, a network drop, or a full disk produces — not a hypothetical edge case.
+Fixed: `inspect_without_extracting` now raises a typed `IncompleteDownloadError`,
+and `plan_all_replicas` catches it per-replica and continues the scan rather than
+aborting on one bad file. Regression test constructs a truncated zip by hand and
+asserts the scan still completes.

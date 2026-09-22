@@ -1,0 +1,93 @@
+_comment: Generated and updated by tessera.data.manifest. Hashes are pinned on first successful retrieval.
+  An entry marked unobtainable is NEVER silently replaced by an uncorrected original.
+files:
+  ait_fox_no_pcaps:
+    dataset: ait
+    filename: fox_no-pcaps.zip
+    url: https://zenodo.org/records/19483937/files/fox_no-pcaps.zip
+    licence: CC-BY-NC-SA-4.0
+    sha256: null
+    size_bytes: null
+    retrieved_utc: null
+    unobtainable: false
+    unobtainable_reason: null
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937. Download in progress / pending hash pin.
+  ait_harrison_no_pcaps:
+    dataset: ait
+    filename: harrison_no-pcaps.zip
+    url: https://zenodo.org/records/19483937/files/harrison_no-pcaps.zip
+    licence: CC-BY-NC-SA-4.0
+    sha256: 03aeaf16acc79c8e89bb4ac147d3273bfcef4134d301aa62cb6cdd79e77084f1
+    size_bytes: 667985140
+    retrieved_utc: '2026-09-22T11:30:52+00:00'
+    unobtainable: false
+    unobtainable_reason: null
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937.
+  ait_russellmitchell_no_pcaps:
+    dataset: ait
+    filename: russellmitchell_no-pcaps.zip
+    url: https://zenodo.org/records/19483937/files/russellmitchell_no-pcaps.zip
+    licence: CC-BY-NC-SA-4.0
+    sha256: 51a03f51daea0fbbdcfe9b8abe0dbbe10633716f4f98074f861204a162ee1978
+    size_bytes: 522084364
+    retrieved_utc: '2026-09-22T11:25:51+00:00'
+    unobtainable: false
+    unobtainable_reason: null
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937. Smallest of 8 no-pcaps bundles; downloaded first
+      to measure the unpacked/zip ratio before committing to all 8. Measured ratio 13.88x (7,247,563,244
+      B unpacked from 522,084,364 B zip, via `unzip -l` totals, no extraction performed).
+  ait_santos_no_pcaps:
+    dataset: ait
+    filename: santos_no-pcaps.zip
+    url: https://zenodo.org/records/19483937/files/santos_no-pcaps.zip
+    licence: CC-BY-NC-SA-4.0
+    sha256: af69973fbf4edeb6a26f1e4ebeae97b577f0263cec15bda0d987cc470425be5d
+    size_bytes: 576734274
+    retrieved_utc: '2026-09-22T11:30:52+00:00'
+    unobtainable: false
+    unobtainable_reason: null
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937.
+  ait_shaw_no_pcaps:
+    dataset: ait
+    filename: shaw_no-pcaps.zip
+    url: https://zenodo.org/records/19483937/files/shaw_no-pcaps.zip
+    licence: CC-BY-NC-SA-4.0
+    sha256: null
+    size_bytes: null
+    retrieved_utc: null
+    unobtainable: false
+    unobtainable_reason: null
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937. Download in progress / pending hash pin.
+  ait_wardbeck_no_pcaps:
+    dataset: ait
+    filename: wardbeck_no-pcaps.zip
+    url: https://zenodo.org/records/19483937/files/wardbeck_no-pcaps.zip
+    licence: CC-BY-NC-SA-4.0
+    sha256: null
+    size_bytes: null
+    retrieved_utc: null
+    unobtainable: false
+    unobtainable_reason: null
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937. Download in progress / pending hash pin.
+  ait_wheeler_no_pcaps:
+    dataset: ait
+    filename: wheeler_no-pcaps.zip
+    url: https://zenodo.org/records/19483937/files/wheeler_no-pcaps.zip
+    licence: CC-BY-NC-SA-4.0
+    sha256: null
+    size_bytes: null
+    retrieved_utc: null
+    unobtainable: false
+    unobtainable_reason: null
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937. Download in progress / pending hash pin.
+  ait_wilson_no_pcaps:
+    dataset: ait
+    filename: wilson_no-pcaps.zip
+    url: https://zenodo.org/records/19483937/files/wilson_no-pcaps.zip
+    licence: CC-BY-NC-SA-4.0
+    sha256: null
+    size_bytes: null
+    retrieved_utc: null
+    unobtainable: false
+    unobtainable_reason: null
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937. Download in progress / pending hash pin.
