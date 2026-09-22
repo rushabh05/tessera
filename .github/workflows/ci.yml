@@ -1,0 +1,55 @@
+name: ci
+
+# CPU-only, free-tier runners. The heavy grid is deliberately NOT run here: a CI
+# step that re-executes hundreds of training runs would exhaust the free minutes
+# and prove nothing that `just check` does not already prove.
+on:
+  push: { branches: [main] }
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync locked environment
+        run: uv sync --locked --group dev
+
+      - name: Lint
+        run: uv run ruff check src tests
+
+      - name: Format check
+        run: uv run ruff format --check src tests
+
+      # Guards that must fail the build when violated, surfaced separately so a
+      # silently-disabled guard is visible in the log.
+      - name: Leakage and contract guards
+        run: uv run pytest tests -q -m mustfail -v
+
+      - name: Full test suite
+        run: uv run pytest tests -q
+
+      - name: End-to-end pipeline
+        run: uv run pytest tests/test_e2e.py -q -v
+
+      - name: Regenerate tables from recorded runs
+        run: uv run python -m tessera.report.tables
+
+      - name: No hand-typed numbers
+        run: uv run python -m tessera.report.check_no_hardcoded_numbers
+
+      - name: Capture environment
+        if: always()
+        run: uv run python -c "from tessera.env import env_json; print(env_json())"

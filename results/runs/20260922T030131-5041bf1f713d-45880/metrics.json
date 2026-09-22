@@ -1,0 +1,16 @@
+{
+  "run_id": "20260922T030131-5041bf1f713d-45880",
+  "created_utc": "2026-09-22T03:01:31+00:00",
+  "config_fingerprint": "5041bf1f713d",
+  "tags": {
+    "model": "t",
+    "dataset": "t",
+    "split": "s"
+  },
+  "metrics": {
+    "binary": {
+      "average_precision": 0.5
+    }
+  },
+  "artifacts": {}
+}

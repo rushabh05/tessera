@@ -1,0 +1,11 @@
+# @package _global_
+# Placeholder until P2 lands the label join. Deliberately fails loudly rather than
+# silently falling back to synthetic data, which would make a synthetic number
+# indistinguishable from a real one in the results index.
+dataset:
+  name: ait
+  builder: tessera.data.ait.window_builder.load_windows
+  is_synthetic: false
+  params:
+    replicas: [fox, harrison, russellmitchell, santos, shaw, wardbeck, wheeler, wilson]
+    window_seconds: 60

@@ -1,0 +1,6 @@
+# @package _global_
+split:
+  name: r0_random
+  regime: R0
+  caption: "leakage upper bound; for comparability with prior work, not a capability claim"
+  params: { val_frac: 0.2, test_frac: 0.2 }

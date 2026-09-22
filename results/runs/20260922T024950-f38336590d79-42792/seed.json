@@ -1,0 +1,6 @@
+{
+  "seed": 0,
+  "deterministic_algorithms": true,
+  "cudnn_benchmark_disabled": true,
+  "note": ""
+}

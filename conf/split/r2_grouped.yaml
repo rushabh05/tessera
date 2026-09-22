@@ -1,0 +1,8 @@
+# @package _global_
+split:
+  name: r2_grouped
+  regime: R2
+  # Only SHORT-LIVED entities are enforced here. Hosts span the whole capture, so
+  # host-disjointness is impossible alongside chronology and is delivered by R3.
+  enforce_groups: [session_id]
+  params: { val_frac: 0.2, test_frac: 0.2, gap_seconds: 600 }

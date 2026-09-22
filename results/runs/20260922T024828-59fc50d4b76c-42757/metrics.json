@@ -1,0 +1,242 @@
+{
+  "run_id": "20260922T024828-59fc50d4b76c-42757",
+  "created_utc": "2026-09-22T02:48:28+00:00",
+  "config_fingerprint": "59fc50d4b76c",
+  "tags": {
+    "model": "random",
+    "dataset": "fixture",
+    "is_synthetic": true,
+    "split": "r2_grouped",
+    "regime": "R2 chronological + short-lived-entity-disjoint",
+    "seed": 0
+  },
+  "metrics": {
+    "binary": {
+      "n": 630,
+      "prevalence": 0.08571428571428572,
+      "average_precision": 0.0903424465389655,
+      "mcc": 0.008778130576253904,
+      "balanced_accuracy": 0.5078125,
+      "roc_auc": 0.5212191358024691,
+      "roc_auc_note": "prevalence-insensitive; reported for comparability only",
+      "precision": 0.08797653958944282,
+      "recall": 0.5555555555555556,
+      "f1": 0.1518987341772152,
+      "accuracy": 0.46825396825396826,
+      "accuracy_note": "uninformative at this prevalence; do not headline",
+      "confusion": {
+        "tp": 30,
+        "fp": 311,
+        "tn": 265,
+        "fn": 24
+      },
+      "threshold": 0.5
+    },
+    "operating_points": {
+      "tpr_at_fpr_0.01": 0.0,
+      "threshold_at_fpr_0.01": Infinity,
+      "tpr_at_fpr_0.001": 0.0,
+      "threshold_at_fpr_0.001": Infinity
+    },
+    "deployment": {
+      "operating_point": {
+        "tpr": 0.0,
+        "fpr": 0.0,
+        "target_fpr": 0.01
+      },
+      "windows_per_day": 1440.0,
+      "false_alerts_per_day": 0.0,
+      "p_attack_given_alert_at_base_rate_0.01": null,
+      "p_attack_given_alert_at_base_rate_0.001": null,
+      "p_attack_given_alert_at_base_rate_0.0001": null,
+      "interpretation": "P(attack|alert) is what an analyst experiences; test-set precision is not."
+    },
+    "calibration": {
+      "n_bins": 15,
+      "ece_positive_class": 0.45934370363614074,
+      "ece_negative_class": 0.5208842020297197,
+      "ece_aggregate": 0.4374094004406029,
+      "ece_aggregate_note": "dominated by the benign bin at this prevalence; the class-conditional values carry the calibration claim"
+    },
+    "per_class": {
+      "min_support_for_rates": 20,
+      "classes": {
+        "0": {
+          "support": 576,
+          "precision": 0.916955017301038,
+          "recall": 0.4600694444444444,
+          "f1": 0.6127167630057804
+        },
+        "1": {
+          "support": 54,
+          "precision": 0.08797653958944282,
+          "recall": 0.5555555555555556,
+          "f1": 0.1518987341772152
+        }
+      }
+    },
+    "selective": {
+      "aurc": 0.5342937804076904,
+      "risk_at_full_coverage": 0.5317460317460317,
+      "risk_at_50pct_coverage": 0.5238095238095238,
+      "risk_at_20pct_coverage": 0.5317460317460317,
+      "curve": {
+        "coverage": [
+          0.0016,
+          0.0206,
+          0.0397,
+          0.0587,
+          0.0778,
+          0.0968,
+          0.1159,
+          0.1349,
+          0.154,
+          0.173,
+          0.1921,
+          0.2111,
+          0.2302,
+          0.2492,
+          0.2683,
+          0.2873,
+          0.3063,
+          0.3254,
+          0.3444,
+          0.3635,
+          0.3825,
+          0.4016,
+          0.4206,
+          0.4397,
+          0.4587,
+          0.4778,
+          0.4968,
+          0.5159,
+          0.5349,
+          0.554,
+          0.573,
+          0.5921,
+          0.6111,
+          0.6302,
+          0.6492,
+          0.6683,
+          0.6873,
+          0.7063,
+          0.7254,
+          0.7444,
+          0.7635,
+          0.7825,
+          0.8016,
+          0.8206,
+          0.8397,
+          0.8587,
+          0.8778,
+          0.8968,
+          0.9159,
+          0.9349,
+          0.954,
+          0.973,
+          0.9921
+        ],
+        "risk": [
+          0.0,
+          0.538462,
+          0.44,
+          0.594595,
+          0.612245,
+          0.590164,
+          0.589041,
+          0.576471,
+          0.56701,
+          0.541284,
+          0.528926,
+          0.533835,
+          0.531034,
+          0.535032,
+          0.538462,
+          0.535912,
+          0.53886,
+          0.531707,
+          0.525346,
+          0.532751,
+          0.53527,
+          0.521739,
+          0.524528,
+          0.530686,
+          0.525952,
+          0.521595,
+          0.523962,
+          0.516923,
+          0.519288,
+          0.52149,
+          0.526316,
+          0.52815,
+          0.527273,
+          0.521411,
+          0.518337,
+          0.529691,
+          0.533487,
+          0.525843,
+          0.52954,
+          0.528785,
+          0.530146,
+          0.525355,
+          0.526733,
+          0.529981,
+          0.531191,
+          0.534196,
+          0.533454,
+          0.536283,
+          0.535529,
+          0.536503,
+          0.539101,
+          0.535073,
+          0.5344
+        ]
+      }
+    },
+    "point_adjustment": "not used",
+    "model_describe": {
+      "name": "random",
+      "seed": 0,
+      "kind": "floor/smoke"
+    },
+    "split_info": {
+      "name": "r2_grouped",
+      "regime": "R2 chronological + short-lived-entity-disjoint",
+      "n_train": 2160,
+      "n_val": 630,
+      "n_test": 630,
+      "gap_seconds": 600,
+      "removed_for_group_overlap": {
+        "session_id": 0
+      },
+      "enforced_groups": [
+        "session_id"
+      ],
+      "note": "host-level disjointness is NOT claimed here; see R3",
+      "pos_train": 194,
+      "pos_val": 66,
+      "pos_test": 54
+    },
+    "dataset_summary": {
+      "n_windows": 3600,
+      "n_replicas": 3,
+      "corpora": [
+        "ait"
+      ],
+      "prevalence_y_bin": 0.0913888888888889,
+      "n_positive": 329,
+      "n_labellable": 2800,
+      "n_excluded_unlabellable": 800,
+      "availability_rate": {
+        "m1_log": 1.0,
+        "m2_metrics": 0.7156,
+        "m3_identity": 0.7211,
+        "m4_graph": 0.7231
+      },
+      "mean_modalities_present": 3.1597222222222223,
+      "time_span_hours": 6.65
+    },
+    "mask_only_floor_ap": 0.2149476897489737
+  },
+  "artifacts": {}
+}

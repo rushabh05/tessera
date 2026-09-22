@@ -1,0 +1,200 @@
+hydra:
+  run:
+    dir: .
+  sweep:
+    dir: .
+    subdir: .
+  launcher:
+    _target_: hydra._internal.core_plugins.basic_launcher.BasicLauncher
+  sweeper:
+    _target_: hydra._internal.core_plugins.basic_sweeper.BasicSweeper
+    max_batch_size: null
+    params: null
+  help:
+    app_name: ${hydra.job.name}
+    header: '${hydra.help.app_name} is powered by Hydra.
+
+      '
+    footer: 'Powered by Hydra (https://hydra.cc)
+
+      Use --hydra-help to view Hydra specific help
+
+      '
+    template: '${hydra.help.header}
+
+      == Configuration groups ==
+
+      Compose your configuration from those groups (group=option)
+
+
+      $APP_CONFIG_GROUPS
+
+
+      == Config ==
+
+      Override anything in the config (foo.bar=value)
+
+
+      $CONFIG
+
+
+      ${hydra.help.footer}
+
+      '
+  hydra_help:
+    template: 'Hydra (${hydra.runtime.version})
+
+      See https://hydra.cc for more info.
+
+
+      == Flags ==
+
+      $FLAGS_HELP
+
+
+      == Configuration groups ==
+
+      Compose your configuration from those groups (For example, append hydra/job_logging=disabled
+      to command line)
+
+
+      $HYDRA_CONFIG_GROUPS
+
+
+      Use ''--cfg hydra'' to Show the Hydra config.
+
+      '
+    hydra_help: ???
+  hydra_logging:
+    version: 1
+    formatters:
+      simple:
+        format: '[%(asctime)s][HYDRA] %(message)s'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: simple
+        stream: ext://sys.stdout
+    root:
+      level: INFO
+      handlers:
+      - console
+    loggers:
+      logging_example:
+        level: DEBUG
+    disable_existing_loggers: false
+  job_logging:
+    version: 1
+    formatters:
+      simple:
+        format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: simple
+        stream: ext://sys.stdout
+      file:
+        class: logging.FileHandler
+        formatter: simple
+        filename: ${hydra.runtime.output_dir}/${hydra.job.name}.log
+    root:
+      level: INFO
+      handlers:
+      - console
+      - file
+    disable_existing_loggers: false
+  env: {}
+  mode: MULTIRUN
+  searchpath: []
+  callbacks: {}
+  output_subdir: .hydra
+  overrides:
+    hydra:
+    - hydra.mode=MULTIRUN
+    task:
+    - dataset=synthetic
+    - model=random,majority,nullmask,lightgbm
+    - split=r0_random,r1_chrono,r2_grouped
+    - seed=0
+  job:
+    name: run
+    chdir: false
+    override_dirname: dataset=synthetic,model=random,majority,nullmask,lightgbm,seed=0,split=r0_random,r1_chrono,r2_grouped
+    id: ???
+    num: ???
+    config_name: config
+    env_set: {}
+    env_copy: []
+    config:
+      override_dirname:
+        kv_sep: '='
+        item_sep: ','
+        exclude_keys: []
+  runtime:
+    version: 1.3.7
+    version_base: '1.3'
+    cwd: /Users/rushabh.ye/Desktop/Backup Windows/rushabh.ye/Projects/Multimodal Feature
+      Extraction in Cloud/tessera
+    config_sources:
+    - path: hydra.conf
+      schema: pkg
+      provider: hydra
+    - path: /Users/rushabh.ye/Desktop/Backup Windows/rushabh.ye/Projects/Multimodal
+        Feature Extraction in Cloud/tessera/conf
+      schema: file
+      provider: main
+    - path: ''
+      schema: structured
+      provider: schema
+    output_dir: ???
+    choices:
+      split: r2_grouped
+      model: random
+      dataset: synthetic
+      hydra/env: default
+      hydra/callbacks: null
+      hydra/job_logging: default
+      hydra/hydra_logging: default
+      hydra/hydra_help: default
+      hydra/help: default
+      hydra/sweeper: basic
+      hydra/launcher: basic
+      hydra/output: default
+  verbose: false
+dataset:
+  name: synthetic
+  builder: tessera.data.synthetic.make_synthetic
+  is_synthetic: true
+  params:
+    n_replicas: 8
+    hosts_per_replica: 6
+    windows_per_host: 1440
+    prevalence: 0.06
+    missingness_label_coupling: 0.35
+    unlabellable_host_fraction: 0.2
+    redundant_copy_of: null
+model:
+  name: random
+  builder: tessera.models.baselines.dummy.build
+  params: {}
+split:
+  name: r2_grouped
+  regime: R2
+  enforce_groups:
+  - session_id
+  params:
+    val_frac: 0.2
+    test_frac: 0.2
+    gap_seconds: 600
+seed: 0
+deterministic: true
+eval:
+  threshold: 0.5
+  windows_per_day: 1440
+  base_rates:
+  - 0.01
+  - 0.001
+  - 0.0001
+leakage:
+  run_permutation: true
+  e1_required_drop_ap: 0.02

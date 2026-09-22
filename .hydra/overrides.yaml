@@ -1,0 +1,4 @@
+- dataset=synthetic
+- model=lightgbm
+- split=r2_grouped
+- seed=0

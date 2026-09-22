@@ -1,0 +1,37 @@
+dataset:
+  name: synthetic
+  builder: tessera.data.synthetic.make_synthetic
+  is_synthetic: true
+  params:
+    n_replicas: 8
+    hosts_per_replica: 6
+    windows_per_host: 1440
+    prevalence: 0.06
+    missingness_label_coupling: 0.35
+    unlabellable_host_fraction: 0.2
+    redundant_copy_of: null
+model:
+  name: lightgbm
+  builder: tessera.models.baselines.dummy.build
+  params: {}
+split:
+  name: r2_grouped
+  regime: R2
+  enforce_groups:
+  - session_id
+  params:
+    val_frac: 0.2
+    test_frac: 0.2
+    gap_seconds: 600
+seed: 0
+deterministic: true
+eval:
+  threshold: 0.5
+  windows_per_day: 1440
+  base_rates:
+  - 0.01
+  - 0.001
+  - 0.0001
+leakage:
+  run_permutation: true
+  e1_required_drop_ap: 0.02

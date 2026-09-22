@@ -1,0 +1,6 @@
+{
+  "required_drop": 0.02,
+  "checks": {},
+  "verdict": "no discriminative model has both R0 and R1 recorded",
+  "evaluated_on": []
+}

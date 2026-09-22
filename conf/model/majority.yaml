@@ -1,0 +1,5 @@
+# @package _global_
+model:
+  name: majority
+  builder: tessera.models.baselines.dummy.build
+  params: {}

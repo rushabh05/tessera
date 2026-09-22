@@ -1,0 +1,33 @@
+# Root config. Every run archives its RESOLVED config next to its metrics, so a
+# number is never separable from the settings that produced it.
+defaults:
+  - dataset: synthetic
+  - model: random
+  - split: r2_grouped
+  - _self_
+
+seed: 0
+deterministic: true
+
+eval:
+  threshold: 0.5
+  # Windows observed per day at 60s granularity per host, used for alert-volume
+  # reporting. Overridden once the real corpus tells us the true host count.
+  windows_per_day: 1440
+  # Deployment base rates for P(attack | alert). The test-set prevalence is an
+  # artifact of dataset construction and is never used for this.
+  base_rates: [0.01, 0.001, 0.0001]
+
+leakage:
+  run_permutation: true
+  # Enforced numerically, fixed before any results exist so it cannot be tuned.
+  e1_required_drop_ap: 0.02
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: .
+  sweep:
+    dir: .
+    subdir: .

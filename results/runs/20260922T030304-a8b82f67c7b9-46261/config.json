@@ -1,0 +1,9 @@
+{
+  "dataset": {
+    "name": "e2e_fixture"
+  },
+  "model": {
+    "name": "lightgbm"
+  },
+  "seed": 0
+}

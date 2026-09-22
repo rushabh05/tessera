@@ -1,0 +1,238 @@
+{
+  "run_id": "20260922T024909-88afb3bf384d-42792",
+  "created_utc": "2026-09-22T02:49:09+00:00",
+  "config_fingerprint": "88afb3bf384d",
+  "tags": {
+    "model": "random",
+    "dataset": "synthetic",
+    "is_synthetic": true,
+    "split": "r2_grouped",
+    "regime": "R2 chronological + short-lived-entity-disjoint",
+    "seed": 0
+  },
+  "metrics": {
+    "binary": {
+      "n": 13344,
+      "prevalence": 0.050059952038369306,
+      "average_precision": 0.052819880662704766,
+      "mcc": 0.0105152405177512,
+      "balanced_accuracy": 0.5120549371436993,
+      "roc_auc": 0.5146618249773725,
+      "roc_auc_note": "prevalence-insensitive; reported for comparability only",
+      "precision": 0.05234819024827999,
+      "recall": 0.5239520958083832,
+      "f1": 0.09518629317378298,
+      "accuracy": 0.5013489208633094,
+      "accuracy_note": "uninformative at this prevalence; do not headline",
+      "confusion": {
+        "tp": 350,
+        "fp": 6336,
+        "tn": 6340,
+        "fn": 318
+      },
+      "threshold": 0.5
+    },
+    "operating_points": {
+      "tpr_at_fpr_0.01": 0.011976047904191617,
+      "threshold_at_fpr_0.01": 0.9949934482574463,
+      "tpr_at_fpr_0.001": 0.0014970059880239522,
+      "threshold_at_fpr_0.001": 0.9997738003730774
+    },
+    "deployment": {
+      "operating_point": {
+        "tpr": 0.011976047904191617,
+        "fpr": 0.005837803723572105,
+        "target_fpr": 0.01
+      },
+      "windows_per_day": 1440.0,
+      "false_alerts_per_day": 8.406437361943832,
+      "p_attack_given_alert_at_base_rate_0.01": 0.02030118658481703,
+      "p_attack_given_alert_at_base_rate_0.001": 0.002049309861438782,
+      "p_attack_given_alert_at_base_rate_0.0001": 0.00020512489567167541,
+      "interpretation": "P(attack|alert) is what an analyst experiences; test-set precision is not."
+    },
+    "calibration": {
+      "n_bins": 15,
+      "ece_positive_class": 0.4852507621951141,
+      "ece_negative_class": 0.5000121370465289,
+      "ece_aggregate": 0.4521135785729498,
+      "ece_aggregate_note": "dominated by the benign bin at this prevalence; the class-conditional values carry the calibration claim"
+    },
+    "per_class": {
+      "min_support_for_rates": 20,
+      "classes": {
+        "0": {
+          "support": 12676,
+          "precision": 0.9522379092820666,
+          "recall": 0.5001577784790154,
+          "f1": 0.6558394538119375
+        },
+        "1": {
+          "support": 668,
+          "precision": 0.05234819024827999,
+          "recall": 0.5239520958083832,
+          "f1": 0.09518629317378298
+        }
+      }
+    },
+    "selective": {
+      "aurc": 0.4975477879517032,
+      "risk_at_full_coverage": 0.49865107913669066,
+      "risk_at_50pct_coverage": 0.5008992805755396,
+      "risk_at_20pct_coverage": 0.4838830584707646,
+      "curve": {
+        "coverage": [
+          0.0001,
+          0.02,
+          0.0399,
+          0.0599,
+          0.0798,
+          0.0997,
+          0.1197,
+          0.1396,
+          0.1595,
+          0.1795,
+          0.1994,
+          0.2193,
+          0.2393,
+          0.2592,
+          0.2792,
+          0.2991,
+          0.319,
+          0.339,
+          0.3589,
+          0.3788,
+          0.3988,
+          0.4187,
+          0.4386,
+          0.4586,
+          0.4785,
+          0.4984,
+          0.5184,
+          0.5383,
+          0.5582,
+          0.5782,
+          0.5981,
+          0.618,
+          0.638,
+          0.6579,
+          0.6778,
+          0.6978,
+          0.7177,
+          0.7376,
+          0.7576,
+          0.7775,
+          0.7974,
+          0.8174,
+          0.8373,
+          0.8572,
+          0.8772,
+          0.8971,
+          0.917,
+          0.937,
+          0.9569,
+          0.9768,
+          0.9968
+        ],
+        "risk": [
+          1.0,
+          0.524345,
+          0.508443,
+          0.498123,
+          0.506103,
+          0.495116,
+          0.491547,
+          0.49329,
+          0.490841,
+          0.485177,
+          0.483653,
+          0.486505,
+          0.489821,
+          0.488291,
+          0.487517,
+          0.4891,
+          0.494949,
+          0.494583,
+          0.496972,
+          0.497923,
+          0.498027,
+          0.499016,
+          0.498377,
+          0.500245,
+          0.501644,
+          0.501428,
+          0.50094,
+          0.498817,
+          0.497919,
+          0.499676,
+          0.499937,
+          0.500303,
+          0.501116,
+          0.501766,
+          0.500719,
+          0.502953,
+          0.502245,
+          0.500457,
+          0.499852,
+          0.499277,
+          0.499201,
+          0.499129,
+          0.499418,
+          0.499869,
+          0.499359,
+          0.498789,
+          0.499224,
+          0.49828,
+          0.498864,
+          0.498888,
+          0.498308
+        ]
+      }
+    },
+    "point_adjustment": "not used",
+    "model_describe": {
+      "name": "random",
+      "seed": 0,
+      "kind": "floor/smoke"
+    },
+    "split_info": {
+      "name": "r2_grouped",
+      "regime": "R2 chronological + short-lived-entity-disjoint",
+      "n_train": 41472,
+      "n_val": 13344,
+      "n_test": 13344,
+      "gap_seconds": 600,
+      "removed_for_group_overlap": {
+        "session_id": 0
+      },
+      "enforced_groups": [
+        "session_id"
+      ],
+      "note": "host-level disjointness is NOT claimed here; see R3",
+      "pos_train": 2179,
+      "pos_val": 848,
+      "pos_test": 668
+    },
+    "dataset_summary": {
+      "n_windows": 69120,
+      "n_replicas": 8,
+      "corpora": [
+        "ait"
+      ],
+      "prevalence_y_bin": 0.05418113425925926,
+      "n_positive": 3745,
+      "n_labellable": 54720,
+      "n_excluded_unlabellable": 14400,
+      "availability_rate": {
+        "m1_log": 1.0,
+        "m2_metrics": 0.7293,
+        "m3_identity": 0.7291,
+        "m4_graph": 0.7267
+      },
+      "mean_modalities_present": 3.18515625,
+      "time_span_hours": 23.983333333333334
+    },
+    "mask_only_floor_ap": 0.1099160497908725
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+# @package _global_
+model:
+  name: nullmask
+  builder: tessera.models.baselines.dummy.build
+  params: {}

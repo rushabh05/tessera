@@ -1,0 +1,59 @@
+{
+  "split": {
+    "name": "r0_random",
+    "regime": "R0 random stratified (leakage upper bound)",
+    "n_train": 41472,
+    "n_val": 13824,
+    "n_test": 13824,
+    "pos_train": 2247,
+    "pos_val": 749,
+    "pos_test": 749
+  },
+  "control_1_exact_duplicates": {
+    "n_rows": 69120,
+    "n_unique": 69120,
+    "n_exact_duplicate_rows": 0,
+    "duplicate_fraction": 0.0,
+    "cross_split_twins": 0,
+    "cross_split_twin_fraction": 0.0,
+    "per_class": {
+      "0": {
+        "n_rows": 65375,
+        "n_unique": 65375,
+        "n_exact_duplicate_rows": 0
+      },
+      "1": {
+        "n_rows": 3745,
+        "n_unique": 3745,
+        "n_exact_duplicate_rows": 0
+      }
+    }
+  },
+  "control_2_near_duplicates": {
+    "method": "simhash-32bit-random-projection",
+    "seed": 0,
+    "n_rows": 69120,
+    "n_buckets": 66055,
+    "n_near_duplicate_rows": 3065,
+    "near_duplicate_fraction": 0.044343,
+    "cross_split_near_twins": 632,
+    "cross_split_near_twin_fraction": 0.045718
+  },
+  "control_3_group_disjointness": [],
+  "control_4_mask_only_floor": {
+    "backend": "lightgbm",
+    "n_features": 4,
+    "prevalence": 0.05418113425925926,
+    "average_precision": 0.1099160497908725,
+    "roc_auc": 0.6944959116936029
+  },
+  "control_5_provenance": null,
+  "control_6_label_permutation": {
+    "n_repeats": 3,
+    "permuted_average_precision_mean": 0.05416595302506189,
+    "permuted_average_precision_std": 0.0007023958235512418,
+    "chance_level": 0.05418113425925926,
+    "within_tolerance": true
+  },
+  "warnings": []
+}

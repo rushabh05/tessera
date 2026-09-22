@@ -1,0 +1,67 @@
+{
+  "split": {
+    "name": "r2_grouped",
+    "regime": "R2 chronological + short-lived-entity-disjoint",
+    "n_train": 2160,
+    "n_val": 630,
+    "n_test": 630,
+    "pos_train": 194,
+    "pos_val": 66,
+    "pos_test": 54
+  },
+  "control_1_exact_duplicates": {
+    "n_rows": 3600,
+    "n_unique": 3600,
+    "n_exact_duplicate_rows": 0,
+    "duplicate_fraction": 0.0,
+    "cross_split_twins": 0,
+    "cross_split_twin_fraction": 0.0,
+    "per_class": {
+      "0": {
+        "n_rows": 3271,
+        "n_unique": 3271,
+        "n_exact_duplicate_rows": 0
+      },
+      "1": {
+        "n_rows": 329,
+        "n_unique": 329,
+        "n_exact_duplicate_rows": 0
+      }
+    }
+  },
+  "control_2_near_duplicates": {
+    "method": "simhash-32bit-random-projection",
+    "seed": 0,
+    "n_rows": 3600,
+    "n_buckets": 3516,
+    "n_near_duplicate_rows": 84,
+    "near_duplicate_fraction": 0.023333,
+    "cross_split_near_twins": 16,
+    "cross_split_near_twin_fraction": 0.025397
+  },
+  "control_3_group_disjointness": [
+    {
+      "group": "session_id",
+      "n_train_groups": 270,
+      "n_test_groups": 81,
+      "n_shared": 0,
+      "asserted_disjoint": true
+    }
+  ],
+  "control_4_mask_only_floor": {
+    "backend": "lightgbm",
+    "n_features": 4,
+    "prevalence": 0.0913888888888889,
+    "average_precision": 0.2149476897489737,
+    "roc_auc": 0.7096140068521473
+  },
+  "control_5_provenance": null,
+  "control_6_label_permutation": {
+    "n_repeats": 3,
+    "permuted_average_precision_mean": 0.0971844864642959,
+    "permuted_average_precision_std": 0.007177305912694049,
+    "chance_level": 0.0913888888888889,
+    "within_tolerance": true
+  },
+  "warnings": []
+}

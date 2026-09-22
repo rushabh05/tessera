@@ -1,0 +1,45 @@
+{
+  "required_drop": 0.02,
+  "checks": {
+    "random": {
+      "gate": "E1 random-vs-chronological inflation",
+      "passed": false,
+      "r0_average_precision": 0.05436660585114193,
+      "r1_average_precision": 0.052819880662704766,
+      "observed_drop": 0.0015467251884371674,
+      "required_drop": 0.02,
+      "message": "E1 HALT: chronological R1 (0.0528) did not fall at least 0.0200 below random R0 (0.0544); observed drop 0.0015. Either the chronological split is not ordering by time, or the random split is not leaking as expected. Debug the split before running anything else."
+    },
+    "majority": {
+      "gate": "E1 random-vs-chronological inflation",
+      "passed": false,
+      "r0_average_precision": 0.05418113425925926,
+      "r1_average_precision": 0.050059952038369306,
+      "observed_drop": 0.004121182220889953,
+      "required_drop": 0.02,
+      "message": "E1 HALT: chronological R1 (0.0501) did not fall at least 0.0200 below random R0 (0.0542); observed drop 0.0041. Either the chronological split is not ordering by time, or the random split is not leaking as expected. Debug the split before running anything else."
+    },
+    "nullmask": {
+      "gate": "E1 random-vs-chronological inflation",
+      "passed": false,
+      "r0_average_precision": 0.11072391247645659,
+      "r1_average_precision": 0.1063755074507684,
+      "observed_drop": 0.004348405025688187,
+      "required_drop": 0.02,
+      "message": "E1 HALT: chronological R1 (0.1064) did not fall at least 0.0200 below random R0 (0.1107); observed drop 0.0043. Either the chronological split is not ordering by time, or the random split is not leaking as expected. Debug the split before running anything else."
+    },
+    "lightgbm": {
+      "gate": "E1 random-vs-chronological inflation",
+      "passed": true,
+      "r0_average_precision": 0.7930024682953387,
+      "r1_average_precision": 0.748806122013499,
+      "observed_drop": 0.04419634628183966,
+      "required_drop": 0.02,
+      "message": "R1 average precision is 0.0442 below R0 (>= 0.0200 required); the chronological split is behaving as expected"
+    }
+  },
+  "verdict": "PASS",
+  "evaluated_on": [
+    "lightgbm"
+  ]
+}

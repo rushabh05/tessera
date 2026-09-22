@@ -1,0 +1,6 @@
+# @package _global_
+dataset:
+  name: fixture
+  builder: tessera.data.synthetic.make_fixture
+  is_synthetic: true
+  params: {}

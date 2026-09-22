@@ -1,0 +1,5 @@
+# @package _global_
+split:
+  name: r1_chrono
+  regime: R1
+  params: { val_frac: 0.2, test_frac: 0.2, gap_seconds: 600 }

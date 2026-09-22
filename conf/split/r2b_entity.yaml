@@ -1,0 +1,6 @@
+# @package _global_
+split:
+  name: r2_group_split
+  regime: R2b
+  group: host_id
+  params: { val_frac: 0.2, test_frac: 0.2 }

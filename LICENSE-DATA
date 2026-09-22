@@ -1,0 +1,33 @@
+# Data licensing
+
+Code in this repository is MIT (see LICENSE). Data artifacts are separate.
+
+## AIT Log Data Set V2.1 — CC BY-NC-SA 4.0
+
+Source: https://zenodo.org/records/19483937 (Landauer et al.)
+
+ShareAlike propagates to adapted material, so derived Parquet feature tables,
+template vocabularies and caches are adaptations subject to the same licence, and
+NonCommercial forecloses commercial use.
+
+**Policy: derived AIT features are NOT redistributed.** They are regenerated locally
+from the original download. This keeps the code permissively licensed without
+ShareAlike propagating into it.
+
+## UNSW-NB15 — academic use only
+
+Commercial use prohibited; redistribution requires author agreement. Used only in the
+pooled negative control for the provenance diagnostic. **Never redistributed in any
+form, including derived rows.**
+
+## CIC-IDS2017, Engelen/WTMC-2021 corrected release
+
+Licence not stated on the distribution site. To be resolved before use; until then
+the manifest records the entry as licence-unknown. Cite Engelen, Rimmer & Joosen,
+WTMC 2021.
+
+## Substitution-refusal rule
+
+If a corrected dataset variant cannot be obtained, the manifest records it as
+`unobtainable`. The uncorrected original is never silently substituted, because doing
+so would invalidate the comparison it was chosen for.
