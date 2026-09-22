@@ -52,20 +52,27 @@ by `test_calendar_features_are_not_present_in_m3` and a signature-level guard
 (`window_identity_vector` no longer accepts a timestamp parameter, so the leaky
 computation cannot be silently reintroduced by resurrecting an old call site).
 
-**With the fix, same-replica** (M1: 8 + M2: 24 + M3: 2 = 34 features):
+**With the fix, all four modalities** (M1: 8 + M2: 24 + M3: 2 + M4: 8 = 42
+features — M4 adds graph structural features over a per-window destination-subnet
+multigraph, built from the same Suricata data but requiring genuine cross-window
+state: peer novelty and reappearance, which M2's per-window aggregates cannot
+express):
 
 | split | AP | MCC |
 |---|---|---|
 | R0 random | 1.000 | — |
-| R1 chronological | **0.981** | **0.667** |
+| R1 chronological | **0.985** | **0.667** |
 
-The E1 gate technically doesn't clear its 0.02 margin here (observed gap 0.019) —
+Adding M4 narrowed the gap further (0.019 → 0.015), and M4's own features
+(`cumulative_peer_count`, `peer_reappearance_rate`) rank in the top 10 by
+importance — genuine contribution, not dead weight.
+
+The E1 gate technically doesn't clear its 0.02 margin here (observed gap ~0.015) —
 worth noting honestly rather than glossing over: the certificate still shows 27.6%
 exact-duplicate rows in R0, but they no longer *drive* the score, because the
-genuine M1+M2 signal (log-template statistics, Suricata flow features) is strong
-enough that duplicate rows are classified consistently regardless of which side of
-the split they land on. This is the gate correctly flagging something worth a
-second look; the second look is benign.
+genuine M1+M2+M4 signal is strong enough that duplicate rows are classified
+consistently regardless of which side of the split they land on. This is the gate
+correctly flagging something worth a second look; the second look is benign.
 
 ### 3. Cross-replica generalisation is strong — the real R3-style evidence
 
@@ -102,7 +109,9 @@ claim would need attack scenarios AIT does not provide.
 
 ## Scope of these results
 
-M1 (log templates, Drain3-mined, summary-statistic view) + M2 (Suricata) + M3
-(identity, calendar-free) — 34 features, 3 of 8 replicas' worth of hosts. M4
-(graph) is not yet included. Cross-replica evidence so far covers 2 of 8 replicas;
-extending to the full 8-replica leave-one-replica-out protocol is the next step.
+All four modalities: M1 (log templates, Drain3-mined, summary-statistic view),
+M2 (Suricata flow/alert/DNS/HTTP/TLS aggregates), M3 (identity, calendar-free),
+M4 (graph — destination-subnet peer structure with cross-window history) — 42
+features, 3 of 8 replicas' worth of hosts. Cross-replica evidence so far covers
+2 of 8 replicas; extending to the full 8-replica leave-one-replica-out protocol
+is the next step.

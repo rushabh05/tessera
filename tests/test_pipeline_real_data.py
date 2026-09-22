@@ -28,6 +28,7 @@ from tessera.eval.splits import (
 from tessera.features.m1_log import N_M1_FEATURES
 from tessera.features.m2_metrics import N_M2_FEATURES
 from tessera.features.m3_identity import N_M3_FEATURES
+from tessera.features.m4_graph import N_M4_FEATURES
 from tessera.features.pipeline import N_TOTAL_FEATURES, build_real_dataset
 from tessera.models.baselines.gbdt import make_gbdt
 from tessera.train.seed import seed_everything
@@ -68,8 +69,8 @@ def real_dataset():
 
 def test_dataset_has_real_shape_and_prevalence(real_dataset):
     assert real_dataset.X.shape[0] > 15000
-    assert real_dataset.X.shape[1] == N_TOTAL_FEATURES == 34
-    assert N_M1_FEATURES + N_M2_FEATURES + N_M3_FEATURES == N_TOTAL_FEATURES
+    assert real_dataset.X.shape[1] == N_TOTAL_FEATURES == 42
+    assert N_M1_FEATURES + N_M2_FEATURES + N_M3_FEATURES + N_M4_FEATURES == N_TOTAL_FEATURES
     assert 0.0 < real_dataset.y.mean() < 1.0
     assert set(real_dataset.host) == {"vpn", "intranet_server", "inet-firewall"}
 

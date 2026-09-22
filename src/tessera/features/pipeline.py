@@ -1,11 +1,9 @@
-"""The P3 vertical slice: real AIT data -> labelled windows -> M1+M2+M3 features
--> a numpy array the P0 harness (splits, leakage controls, GBDT baseline) can score.
+"""The P3 vertical slice: real AIT data -> labelled windows -> M1+M2+M3+M4
+features -> a numpy array the P0 harness (splits, leakage controls, GBDT
+baseline) can score.
 
-M4 (graph) is not yet included - it needs its own per-window entity graph
-construction, a larger piece of infrastructure than M1/M2/M3 each needed
-individually, and is the next increment. A window with no eve.json data for its
-host gets an all-zero M2 vector; the availability mask records this rather than
-hiding it.
+A window with no eve.json data for its host gets an all-zero M2/M4 vector; the
+availability mask records this rather than hiding it.
 """
 
 from __future__ import annotations
@@ -24,8 +22,18 @@ from tessera.features.m1_log import (
 )
 from tessera.features.m2_metrics import N_M2_FEATURES, stream_eve_windows
 from tessera.features.m3_identity import N_M3_FEATURES, window_identity_vector
+from tessera.features.m4_graph import N_M4_FEATURES, stream_eve_graph_windows
 
-N_TOTAL_FEATURES = N_M1_FEATURES + N_M2_FEATURES + N_M3_FEATURES
+N_TOTAL_FEATURES = N_M1_FEATURES + N_M2_FEATURES + N_M3_FEATURES + N_M4_FEATURES
+
+# Column offsets, named once so every reader (pipeline, tests, feature-importance
+# reports) slices the same way instead of re-deriving arithmetic from N_M*_FEATURES
+# scattered across call sites.
+M1_SLICE = slice(0, N_M1_FEATURES)
+M2_SLICE = slice(N_M1_FEATURES, N_M1_FEATURES + N_M2_FEATURES)
+M3_SLICE = slice(M2_SLICE.stop, M2_SLICE.stop + N_M3_FEATURES)
+M4_SLICE = slice(M3_SLICE.stop, M3_SLICE.stop + N_M4_FEATURES)
+assert M4_SLICE.stop == N_TOTAL_FEATURES
 
 
 @dataclass
@@ -36,7 +44,7 @@ class RealDataset:
     y: np.ndarray  # (n,) int8
     host: np.ndarray  # (n,) str — for group-disjoint splitting
     window_start: np.ndarray  # (n,) int64 — for chronological splitting
-    availability: np.ndarray  # (n, 2) bool — [M1 (log) present, M2 (metrics) present]
+    availability: np.ndarray  # (n, 3) bool — [M1 present, M2 present, M4 present]
     build_report: BuildReport
     feature_names: tuple = ()
 
@@ -79,7 +87,8 @@ def _join_all_sources(
 
 
 def build_real_dataset(*, replica_dir: Path, capture_year: int, hosts: list[str]) -> RealDataset:
-    """Join labels with M1 (templates), M2 (Suricata) and M3 (identity) features."""
+    """Join labels with M1 (templates), M2 (Suricata metrics), M3 (identity) and
+    M4 (graph structure) features."""
     events_by_hs, report = _join_all_sources(replica_dir, hosts, capture_year)
 
     # --- labels: reuse the join output to build (host, window) -> is_attack ----
@@ -91,16 +100,24 @@ def build_real_dataset(*, replica_dir: Path, capture_year: int, hosts: list[str]
     miner = make_template_miner()
     m1_windows = mine_events_into_windows(events_by_hs, miner=miner)
 
-    # --- M2: stream each host's eve.json independently -------------------------
+    # --- M2 and M4: two different views of the same eve.json, read once each ---
+    # (M2 is order-independent aggregation; M4 needs temporal order for peer
+    # history, so they are genuinely separate passes rather than one shared loop.)
     eve_by_host: dict[str, dict[int, np.ndarray]] = {}
+    graph_by_host: dict[str, dict[int, np.ndarray]] = {}
     for host in hosts:
         eve_path = replica_dir / "gather" / host / "logs" / "suricata" / "eve.json"
-        if eve_path.exists():
-            stats = stream_eve_windows(eve_path)
-            eve_by_host[host] = {w: s.to_vector() for w, s in stats.items()}
+        if not eve_path.exists():
+            continue
+        stats = stream_eve_windows(eve_path)
+        eve_by_host[host] = {w: s.to_vector() for w, s in stats.items()}
+        graph_by_host[host] = stream_eve_graph_windows(eve_path)
 
     all_keys = (
-        set(label_windows) | set(m1_windows) | {(h, w) for h, wm in eve_by_host.items() for w in wm}
+        set(label_windows)
+        | set(m1_windows)
+        | {(h, w) for h, wm in eve_by_host.items() for w in wm}
+        | {(h, w) for h, wm in graph_by_host.items() for w in wm}
     )
     rows = sorted(all_keys)
     n = len(rows)
@@ -109,7 +126,7 @@ def build_real_dataset(*, replica_dir: Path, capture_year: int, hosts: list[str]
     y = np.zeros(n, dtype=np.int8)
     host_arr = np.empty(n, dtype=object)
     w_start_arr = np.zeros(n, dtype=np.int64)
-    avail = np.zeros((n, 2), dtype=bool)
+    avail = np.zeros((n, 3), dtype=bool)
 
     for i, (host, w_start) in enumerate(rows):
         host_arr[i] = host
@@ -121,25 +138,25 @@ def build_real_dataset(*, replica_dir: Path, capture_year: int, hosts: list[str]
 
         m1acc = m1_windows.get((host, w_start))
         if m1acc is not None:
-            X[i, :N_M1_FEATURES] = m1acc.to_vector()
+            X[i, M1_SLICE] = m1acc.to_vector()
             avail[i, 0] = True
 
         m2vec = eve_by_host.get(host, {}).get(w_start)
         if m2vec is not None:
-            X[i, N_M1_FEATURES : N_M1_FEATURES + N_M2_FEATURES] = m2vec
+            X[i, M2_SLICE] = m2vec
             avail[i, 1] = True
 
-        n_sources_active = int(avail[i, 0]) + int(avail[i, 1])
-        X[i, N_M1_FEATURES + N_M2_FEATURES :] = window_identity_vector(
-            host=host, n_sources_active=n_sources_active
-        )
+        m4vec = graph_by_host.get(host, {}).get(w_start)
+        if m4vec is not None:
+            X[i, M4_SLICE] = m4vec
+            avail[i, 2] = True
 
-    # Populate the window/prevalence counts on the report. These were computed by
-    # build_host_windows() in the old M2-only pipeline; this rewrite joins sources
-    # itself (to share the parse with M1's template mining) and must derive them
-    # from the actual output arrays instead, or every per-host prevalence figure
-    # silently reports empty - caught by inspecting a real cross-replica run where
-    # `per_host_prevalence` printed as `{}` despite y being fully populated.
+        n_sources_active = int(avail[i, 0]) + int(avail[i, 1]) + int(avail[i, 2])
+        X[i, M3_SLICE] = window_identity_vector(host=host, n_sources_active=n_sources_active)
+
+    # Populate the window/prevalence counts on the report from the actual output
+    # arrays (see git history: an earlier rewrite silently left these at their
+    # dataclass defaults; caught by inspecting a real run, not by assumption).
     report.n_windows = n
     report.n_attack_windows = int(y.sum())
     per_host: dict[str, list[int]] = {}
@@ -176,5 +193,18 @@ def build_real_dataset(*, replica_dir: Path, capture_year: int, hosts: list[str]
             ),
             *(f"m2_{i}" for i in range(N_M2_FEATURES)),
             *(f"m3_{n}" for n in ("host_bucket", "n_sources_active")),
+            *(
+                f"m4_{n}"
+                for n in (
+                    "n_unique_peers",
+                    "n_new_peers",
+                    "frac_new_peers",
+                    "peer_entropy",
+                    "max_peer_share",
+                    "n_unique_peer_port_pairs",
+                    "peer_reappearance_rate",
+                    "cumulative_peer_count",
+                )
+            ),
         ),
     )
