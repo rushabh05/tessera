@@ -74,6 +74,22 @@ def test_dataset_has_real_shape_and_prevalence(real_dataset):
     assert set(real_dataset.host) == {"vpn", "intranet_server", "inet-firewall"}
 
 
+def test_build_report_per_host_prevalence_is_populated(real_dataset):
+    """Regression test: a rewrite of build_real_dataset (to share the source
+    parse between label windowing and M1 template mining) stopped populating
+    n_windows/n_attack_windows/per_host_prevalence on the returned report -
+    every field silently stayed at its dataclass default ({}), only caught by
+    inspecting a real cross-replica run where the printed report was empty
+    despite y being fully populated."""
+    report = real_dataset.build_report
+    assert report.n_windows == real_dataset.X.shape[0]
+    assert report.n_attack_windows == int(real_dataset.y.sum())
+    assert set(report.per_host_prevalence) == {"vpn", "intranet_server", "inet-firewall"}
+    for stats in report.per_host_prevalence.values():
+        assert stats["n_windows"] > 0
+        assert 0.0 <= stats["prevalence"] <= 1.0
+
+
 def test_random_split_is_inflated_by_duplicate_leakage_on_m2_alone(real_dataset):
     """THE headline finding, isolated to M2 (Suricata) columns only, which are
     dominated by sparse/near-zero rows and therefore show the classic duplicate-

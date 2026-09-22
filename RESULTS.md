@@ -3,10 +3,10 @@
 Real numbers, from real AIT data, reproducible with:
 
 ```bash
-uv run pytest tests/test_pipeline_real_data.py -q -v
+uv run pytest tests/test_pipeline_real_data.py tests/test_cross_replica.py -q -v
 ```
 
-## Two findings, both self-demonstrated on real data
+## Three findings, all self-demonstrated on real data
 
 ### 1. Random-split evaluation is inflated by duplicate-row leakage (the project's central thesis)
 
@@ -52,10 +52,7 @@ by `test_calendar_features_are_not_present_in_m3` and a signature-level guard
 (`window_identity_vector` no longer accepts a timestamp parameter, so the leaky
 computation cannot be silently reintroduced by resurrecting an old call site).
 
-## The corrected, current result
-
-With the fix in place — **34 features (M1: 8, M2: 24, M3: 2), no calendar
-leakage**:
+**With the fix, same-replica** (M1: 8 + M2: 24 + M3: 2 = 34 features):
 
 | split | AP | MCC |
 |---|---|---|
@@ -70,12 +67,28 @@ enough that duplicate rows are classified consistently regardless of which side 
 the split they land on. This is the gate correctly flagging something worth a
 second look; the second look is benign.
 
-**Caveat on the 0.98 chronological score itself**: this is still only 3 hosts
-within one capture, and `inet-firewall`'s near-continuous DNS-exfiltration attack
-(93.8% window prevalence) is likely an "easy" case with an obvious signature —
-not yet proof of generalisation across genuinely different attack scenarios. That
-needs the full R3 leave-one-replica-out protocol across all 8 replicas, now
-unblocked since all 8 are downloaded.
+### 3. Cross-replica generalisation is strong — the real R3-style evidence
+
+Train entirely on `russellmitchell`, evaluate on `santos` — a replica the model
+has never seen, with different specific hosts, timestamps, IPs and usernames:
+
+| evaluation | AP | MCC |
+|---|---|---|
+| cross-replica (train=russellmitchell, test=santos) | **0.999** | 0.989 |
+| same-replica (santos, random split) | 0.999 | 0.996 |
+
+Cross-replica performance is essentially identical to same-replica performance —
+strong evidence the M1+M2+M3 features capture genuine, transferable attack
+structure (Drain3 template patterns, Suricata flow signatures) rather than
+replica-specific artifacts.
+
+**Scoped honestly, per this project's own established framing**: named
+*cross-replica*, not *cross-organisation*. The AIT replicas are
+parameter-randomised executions of the **same underlying scenario and attack
+repertoire** (confirmed from the Zenodo record description), so this measures
+robustness to that randomisation — a real and useful property, but not evidence
+of transfer to a genuinely different environment or attack type. That broader
+claim would need attack scenarios AIT does not provide.
 
 ## What this validates
 
@@ -83,12 +96,13 @@ unblocked since all 8 are downloaded.
   two different, independent places (duplicate rows; a self-authored feature bug)
   using two different mechanisms (the leakage certificate; the E1 halt gate).
 - The label join (P2) and window builder (P3) are correct enough to produce
-  coherent, explicable results at scale.
+  coherent, explicable results at scale, and to transfer across replicas.
 - **The base paper's methodology (99.4% accuracy, random split, pooled corpus
-  with cross-split duplicates) is exactly the failure mode measured here.**
+  with cross-split duplicates) is exactly the failure mode measured in finding 1.**
 
-## Scope of this result
+## Scope of these results
 
 M1 (log templates, Drain3-mined, summary-statistic view) + M2 (Suricata) + M3
 (identity, calendar-free) — 34 features, 3 of 8 replicas' worth of hosts. M4
-(graph) is not yet included.
+(graph) is not yet included. Cross-replica evidence so far covers 2 of 8 replicas;
+extending to the full 8-replica leave-one-replica-out protocol is the next step.

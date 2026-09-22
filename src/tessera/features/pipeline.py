@@ -134,6 +134,25 @@ def build_real_dataset(*, replica_dir: Path, capture_year: int, hosts: list[str]
             host=host, n_sources_active=n_sources_active
         )
 
+    # Populate the window/prevalence counts on the report. These were computed by
+    # build_host_windows() in the old M2-only pipeline; this rewrite joins sources
+    # itself (to share the parse with M1's template mining) and must derive them
+    # from the actual output arrays instead, or every per-host prevalence figure
+    # silently reports empty - caught by inspecting a real cross-replica run where
+    # `per_host_prevalence` printed as `{}` despite y being fully populated.
+    report.n_windows = n
+    report.n_attack_windows = int(y.sum())
+    per_host: dict[str, list[int]] = {}
+    for i in range(n):
+        h = host_arr[i]
+        counts = per_host.setdefault(h, [0, 0])
+        counts[0] += 1
+        counts[1] += int(y[i])
+    report.per_host_prevalence = {
+        h: {"n_windows": c[0], "n_attack": c[1], "prevalence": round(c[1] / max(c[0], 1), 4)}
+        for h, c in sorted(per_host.items())
+    }
+
     return RealDataset(
         X=X,
         y=y,
