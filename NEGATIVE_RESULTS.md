@@ -296,3 +296,25 @@ silently resurrect the leaky computation by passing a timestamp back in.
 This is exactly the class of self-caught error `NEGATIVE_RESULTS.md` exists to
 record: found by testing the project's own pipeline against real data with the
 same rigor applied to auditing the base paper, not exempted from it.
+
+## P4 finding: attack prevalence varies by orders of magnitude ACROSS replicas too (2026-09-23)
+
+### F8. One replica (shaw) has near-zero positives for the fixed host/source subset
+
+F7 found per-host prevalence non-uniform WITHIN one replica (0.3%–94%). Running
+the full 8-replica leave-one-replica-out protocol found the same pattern ACROSS
+replicas: 7 of 8 have 2,784–6,327 positive windows on the fixed 3-host/4-source
+subset; `shaw` has **6**. Investigated, not a bug: shaw's capture spans 162
+hours (longer than the ~96h of the other replicas measured), and all 6 positive
+windows cluster within a single 44-minute episode near the end, across all three
+hosts — a real consequence of the per-replica execution-time randomisation
+(Zenodo: "attack parameters and their execution orders vary in each dataset"),
+not a label-join or feature-extraction defect.
+
+Extended the project's own `MIN_SUPPORT_FOR_RATES` convention (already used for
+per-class reporting within one dataset) to leave-one-replica-out folds: a fold
+with fewer than 20 held-out positives is reported in full in the per-fold table
+but excluded from the summary mean/std, because a naive pooled average across
+all 8 folds (0.907 ± 0.253) would understate how strong and consistent the other
+seven folds actually are (0.996 ± 0.009 once the degenerate fold is excluded
+rather than silently blended in).

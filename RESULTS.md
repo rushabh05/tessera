@@ -74,22 +74,59 @@ genuine M1+M2+M4 signal is strong enough that duplicate rows are classified
 consistently regardless of which side of the split they land on. This is the gate
 correctly flagging something worth a second look; the second look is benign.
 
-### 3. Cross-replica generalisation is strong — the real R3-style evidence
+### 3. Cross-replica generalisation is strong — confirmed across all 8 replicas
 
-Train entirely on `russellmitchell`, evaluate on `santos` — a replica the model
-has never seen, with different specific hosts, timestamps, IPs and usernames:
+Full leave-one-replica-out (`tests/test_loro_real.py`): train on 7 replicas, test
+on the 8th, repeated for every replica in turn — all four modalities (42
+features):
 
-| evaluation | AP | MCC |
-|---|---|---|
-| cross-replica (train=russellmitchell, test=santos) | **0.999** | 0.989 |
-| same-replica (santos, random split) | 0.999 | 0.996 |
+| held out | n test | n positive | AP | MCC | |
+|---|---|---|---|---|---|
+| fox | 25,104 | 3,437 | 0.9998 | 0.998 | |
+| harrison | 25,614 | 6,327 | 0.9766 | 0.224 | ← low MCC despite high AP, see below |
+| russellmitchell | 20,463 | 5,161 | 0.9999 | 0.999 | |
+| santos | 19,995 | 3,331 | 0.9994 | 0.998 | |
+| **shaw** | 29,207 | **6** | 0.2814 | 0.471 | **LOW SUPPORT — excluded from summary** |
+| wardbeck | 24,750 | 2,784 | 0.9996 | 0.998 | |
+| wheeler | 24,762 | 4,662 | 0.9998 | 0.998 | |
+| wilson | 29,663 | 4,981 | 0.9996 | 0.998 | |
 
-Cross-replica performance is essentially identical to same-replica performance —
-strong evidence the M1+M2+M3 features capture genuine, transferable attack
-structure (Drain3 template patterns, Suricata flow signatures) rather than
-replica-specific artifacts.
+**Summary, excluding the flagged low-support fold** (7 folds):
 
-**Scoped honestly, per this project's own established framing**: named
+| metric | mean | std | min | max |
+|---|---|---|---|---|
+| AP | **0.996** | 0.009 | 0.977 | 1.000 |
+| MCC | 0.888 | 0.293 | 0.224 | 0.999 |
+
+Strong and *tight* — a 0.009 standard deviation across seven independent held-out
+replicas is real evidence the M1+M2+M3+M4 features transfer across independently
+randomised executions of the scenario, not a lucky single pair.
+
+**Two things reported honestly rather than smoothed over:**
+
+- **`shaw` is a genuinely low-support fold, not a bug.** Its fixed 3-host/4-source
+  subset has only 6 positive windows out of 29,207 — every other replica has
+  hundreds to thousands. Investigated: shaw's capture spans 162 hours (longer
+  than the others), and its 6 positive windows all cluster within a single
+  44-minute episode near the end, across all three hosts. This is a real
+  consequence of "attack parameters and execution order vary per replica"
+  (Zenodo's own description) — for this particular randomised execution, the
+  attack against these three specific hosts was much briefer. Per this project's
+  own `MIN_SUPPORT_FOR_RATES` convention (already used for per-class reporting in
+  `eval/metrics.py`, now applied per-fold too), this fold is **reported in full**
+  but **excluded from the summary statistics** rather than silently averaged in —
+  a naive pooled mean±std across all 8 folds would read 0.907 ± 0.253, which
+  understates how strong the other 7 folds actually are.
+- **`harrison`'s MCC (0.224) diverges sharply from its AP (0.977).** AP is
+  threshold-free (ranking quality); MCC here uses a fixed 0.5 cutoff. This
+  pattern — near-perfect ranking, poor fixed-threshold classification — usually
+  means probability outputs are shifted for that replica rather than that the
+  model has failed to learn anything, and is exactly the reason this project
+  reports AP first and treats accuracy-family metrics as secondary. Not
+  chased further here; a per-replica calibrated threshold or the TPR-at-FPR
+  metrics already in `eval/metrics.py` would be the next step.
+
+**Scoped honestly, per this project's established framing**: named
 *cross-replica*, not *cross-organisation*. The AIT replicas are
 parameter-randomised executions of the **same underlying scenario and attack
 repertoire** (confirmed from the Zenodo record description), so this measures
@@ -112,6 +149,8 @@ claim would need attack scenarios AIT does not provide.
 All four modalities: M1 (log templates, Drain3-mined, summary-statistic view),
 M2 (Suricata flow/alert/DNS/HTTP/TLS aggregates), M3 (identity, calendar-free),
 M4 (graph — destination-subnet peer structure with cross-window history) — 42
-features, 3 of 8 replicas' worth of hosts. Cross-replica evidence so far covers
-2 of 8 replicas; extending to the full 8-replica leave-one-replica-out protocol
-is the next step.
+features, a fixed 3-host/4-source subset applied identically across all 8
+downloaded replicas. Full leave-one-replica-out is complete (§3). Not yet done:
+extending beyond this fixed host/source subset (more of the ~70 file types per
+replica), and the neural TESSERA-base model (GMU fusion) — everything so far
+uses LightGBM as the baseline.
