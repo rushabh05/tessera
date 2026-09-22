@@ -3,10 +3,15 @@
 Real numbers, from real AIT data, reproducible with:
 
 ```bash
+# Findings 1-2 (leakage), fast:
 uv run pytest tests/test_pipeline_real_data.py tests/test_cross_replica.py -q -v
+# Finding 3 (8-replica generalisation), fast via cache:
+uv run pytest tests/test_loro_real.py -q -v
+# Finding 4 (neural model + attribution honesty), slow (~5 min, trains real models):
+uv run pytest tests/test_tessera_base.py -q -v -m slow
 ```
 
-## Three findings, all self-demonstrated on real data
+## Four findings, all self-demonstrated on real data
 
 ### 1. Random-split evaluation is inflated by duplicate-row leakage (the project's central thesis)
 
@@ -143,6 +148,10 @@ claim would need attack scenarios AIT does not provide.
   coherent, explicable results at scale, and to transfer across replicas.
 - **The base paper's methodology (99.4% accuracy, random split, pooled corpus
   with cross-split duplicates) is exactly the failure mode measured in finding 1.**
+- The actual TESSERA-base neural model (not just the GBDT baseline) trains
+  correctly on real multimodal data and matches the tuned classical baseline —
+  and its own explanation mechanism was checked against independent evidence
+  rather than trusted, the same rigor applied everywhere else in this project.
 
 ## Scope of these results
 
@@ -154,3 +163,62 @@ downloaded replicas. Full leave-one-replica-out is complete (§3). Not yet done:
 extending beyond this fixed host/source subset (more of the ~70 file types per
 replica), and the neural TESSERA-base model (GMU fusion) — everything so far
 uses LightGBM as the baseline.
+
+## 4. TESSERA-base: the real neural model, and an honest limit on its explanations
+
+Everything above uses LightGBM as the classifier. TESSERA-base
+(`models/tessera_base.py`) is the actual project model: four small per-modality
+encoders (Linear → GroupNorm → GELU → Linear) feeding a Gated Multimodal Unit
+(availability-aware softmax fusion) and one MLP head. 5,005 parameters total.
+
+**Trained on real data**: 7 replicas pooled (152,629 windows after carving a
+validation slice), tested on the 8th (`santos`, held out), 30 epochs with early
+stopping, MPS, 82.5 seconds:
+
+| model | AP | MCC |
+|---|---|---|
+| TESSERA-base (neural, 5,005 params) | **0.9995** | 0.9969 |
+| LightGBM (same fold, for comparison) | 0.9994 | 0.9975 |
+
+A from-scratch neural model matches the tuned gradient-boosting baseline on real
+data — not the point of the exercise (LightGBM is expected to be highly
+competitive on tabular features; see the project's own pre-committed framing),
+but confirms the architecture trains correctly and isn't leaving obvious
+performance on the table.
+
+### The GMU's own attribution should not be trusted at face value
+
+The gate values are meant to explain a verdict — "this alert fired mostly
+because of M2" — and are the mechanism the planned demo uses for exactly that.
+Measured mean attribution on the test set: **M1 14%, M2 2%, M3 83%, M4 1%.**
+Taken at face value, this says the model barely uses M1 (log templates) and
+relies almost entirely on M3 (2 features: a hashed host bucket and a source
+count).
+
+**That reading is wrong, and here is the check that proves it.** Two
+independent ablations:
+
+| check | AP |
+|---|---|
+| GBDT on M1 alone | 0.9996 |
+| GBDT on M3 alone | 0.6917 |
+| GBDT on host_bucket alone (1 feature) | 0.4977 (MCC=0, prevalence floor 0.1666) |
+| TESSERA-base **with** M1 (full model) | 0.9995 |
+| TESSERA-base **without** M1 (zeroed, marked unavailable — the honest removal) | 0.9846 |
+
+M1 alone carries nearly the entire signal for a classical model, and genuinely
+removing it from the neural model — not just down-weighting it, actually
+zeroing it and marking it structurally absent — costs real, measurable
+performance (0.9995 → 0.9846). **The gate's 14% figure understates M1's true
+importance by a wide margin.** `host_bucket` alone, meanwhile, is barely above
+the prevalence floor and has MCC=0 — nowhere near what an 83%-attribution
+reading would suggest M3 is doing.
+
+**Locked in by test**: `test_gmu_attribution_does_not_match_naive_ablation_importance`
+asserts the direction of this gap (low attribution, real importance) so it
+cannot silently disappear.
+
+**Consequence for the demo and the report**: gate values are shown as *a*
+signal, never presented as ground truth for "what the model used." A proper
+per-modality ablation is the only reliable importance measure this project has,
+and is what any explanation claim should cite.

@@ -318,3 +318,42 @@ but excluded from the summary mean/std, because a naive pooled average across
 all 8 folds (0.907 ± 0.253) would understate how strong and consistent the other
 seven folds actually are (0.996 ± 0.009 once the degenerate fold is excluded
 rather than silently blended in).
+
+## P5 finding: the model's own explanation mechanism is misleading (2026-09-23)
+
+### F9. GMU attribution understates a modality's true importance by a wide margin
+
+TESSERA-base's Gated Multimodal Unit outputs a per-modality gate weight,
+intended as the mechanism the demo uses to explain a verdict ("this alert fired
+mostly because of M2"). Trained on real data (7 replicas, tested on the 8th),
+the gate's own mean attribution was **M1 14%, M2 2%, M3 83%, M4 1%** — read at
+face value, this says the model barely uses M1 (log-template statistics) and
+relies almost entirely on M3 (2 features: a hashed host identifier and a source
+count).
+
+Checked with two independent ablations rather than trusted:
+
+| check | AP |
+|---|---|
+| GBDT on M1 alone | 0.9996 |
+| GBDT on M3 alone | 0.6917 |
+| GBDT on `host_bucket` alone (1 feature) | 0.4977, MCC=0 |
+| TESSERA-base with M1 present | 0.9995 |
+| TESSERA-base with M1 genuinely removed (zeroed + marked unavailable) | 0.9846 |
+
+M1 alone carries nearly the whole signal for a classical model, and actually
+removing it from the neural model (not down-weighting — zeroing and marking it
+structurally absent, the same mechanism the availability mask uses everywhere
+else) costs real performance. `host_bucket` alone is barely above the
+prevalence floor with MCC=0. **The gate's stated 14%/83% split does not match
+what either model's own behaviour shows.**
+
+This is the same category of error the project has caught in itself before
+(the calendar-feature leakage, the empty per-host prevalence report): a
+mechanism that *looks* like it is telling you something true, checked against
+independent evidence rather than trusted because it is plausible or
+convenient. Consequence: gate values are documented and used as *a* signal,
+never presented as ground truth for "what the model used" — in the report, the
+demo, or the viva. A proper per-modality ablation, not the gate, is this
+project's only reliable importance measure. Locked in by
+`test_gmu_attribution_does_not_match_naive_ablation_importance`.
