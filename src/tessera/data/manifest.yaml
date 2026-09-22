@@ -52,42 +52,43 @@ files:
     filename: shaw_no-pcaps.zip
     url: https://zenodo.org/records/19483937/files/shaw_no-pcaps.zip
     licence: CC-BY-NC-SA-4.0
-    sha256: null
-    size_bytes: null
-    retrieved_utc: null
+    sha256: 825ef8ac66cffeb9f799df18621ce7f35a4b3225350d10768ae80305310b8e0b
+    size_bytes: 1319137852
+    retrieved_utc: '2026-09-22T12:22:04+00:00'
     unobtainable: false
     unobtainable_reason: null
-    notes: AIT Log Data Set V2.1, Zenodo record 19483937. Download in progress / pending hash pin.
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937.
   ait_wardbeck_no_pcaps:
     dataset: ait
     filename: wardbeck_no-pcaps.zip
     url: https://zenodo.org/records/19483937/files/wardbeck_no-pcaps.zip
     licence: CC-BY-NC-SA-4.0
-    sha256: null
-    size_bytes: null
-    retrieved_utc: null
+    sha256: 07fe8955e39d2c3531b31903cab3200d19db5d291159ba1485ac30a0a937cb58
+    size_bytes: 818462147
+    retrieved_utc: '2026-09-22T12:14:50+00:00'
     unobtainable: false
     unobtainable_reason: null
-    notes: AIT Log Data Set V2.1, Zenodo record 19483937. Download in progress / pending hash pin.
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937.
   ait_wheeler_no_pcaps:
     dataset: ait
     filename: wheeler_no-pcaps.zip
     url: https://zenodo.org/records/19483937/files/wheeler_no-pcaps.zip
     licence: CC-BY-NC-SA-4.0
-    sha256: null
-    size_bytes: null
-    retrieved_utc: null
+    sha256: 01f49e8c66b453fca8d3ebb3e4b35788acef150c8bbfc412085f53e0308aea0d
+    size_bytes: 767673839
+    retrieved_utc: '2026-09-22T12:14:50+00:00'
     unobtainable: false
     unobtainable_reason: null
-    notes: AIT Log Data Set V2.1, Zenodo record 19483937. Download in progress / pending hash pin.
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937.
   ait_wilson_no_pcaps:
     dataset: ait
     filename: wilson_no-pcaps.zip
     url: https://zenodo.org/records/19483937/files/wilson_no-pcaps.zip
     licence: CC-BY-NC-SA-4.0
-    sha256: null
-    size_bytes: null
-    retrieved_utc: null
+    sha256: e7a6e0d3d7ac3cde9354ada2e593dd0e3d9c50007adae426f9f5979e2d697c20
+    size_bytes: 1083526183
+    retrieved_utc: '2026-09-22T12:29:07+00:00'
     unobtainable: false
     unobtainable_reason: null
-    notes: AIT Log Data Set V2.1, Zenodo record 19483937. Download in progress / pending hash pin.
+    notes: AIT Log Data Set V2.1, Zenodo record 19483937. First attempt truncated mid-download (291955572
+      of 1083526183 bytes, silently accepted by curl); re-downloaded with -f for failure detection.

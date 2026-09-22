@@ -236,3 +236,26 @@ Two granularities are now reported side by side, because they answer different
 questions: file-type coverage (close to the plan's original framing) and
 (host, type)-pair coverage (the resolution the C2 missing-modality experiment
 actually operates at, since availability is a per-host property).
+
+## P3 finding (window builder, real data, 2026-09-22)
+
+### F7. Per-host attack prevalence is wildly non-uniform, not a small fraction
+
+Joining `openvpn.log`/vpn, `auth.log`+`audit.log`/intranet_server, and
+`dnsmasq.log`/inet-firewall into 60s windows: vpn is 0.33% positive,
+intranet_server 2.12% — both realistic for anomaly detection. But
+**inet-firewall is 93.76% positive**, because the labelled DNS-exfiltration
+activity (`dnsteal`) spans **85.9 of the 96-hour capture** on that host —
+essentially continuous, not a discrete event, with only the final ~10 hours
+benign.
+
+A single pooled prevalence number would hide this bimodal split entirely. The
+window builder now reports prevalence **per host** (`BuildReport.per_host_prevalence`),
+not only in aggregate — consistent with the harness's existing per-class support
+reporting.
+
+### C8. My own test arithmetic error, caught by running the test
+
+Wrote `assert w_start == 60` for a window computed as `floor(120/60)*60`, which is
+120, not 60. Caught immediately because the test failed rather than passed
+silently — the value the test asserted was simply wrong, not the code under test.
