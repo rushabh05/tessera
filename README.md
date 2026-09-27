@@ -3,22 +3,29 @@
 Multimodal cloud anomaly detection with a leakage-instrumented evaluation harness and
 a verdict transparency log.
 
-Final-year major project. Enhances **Nagarjun & Rajkumar, "Design of an Anomaly
-Detection Framework for Delay and Privacy-Aware Blockchain-Based Cloud Deployments",
-IEEE Access 12 (2024) 84843–84861** — treated as the *object of study*, not as the
-source of the design.
+Final-year major project. TESSERA is a leakage-instrumented, multimodal cloud
+anomaly detector: it fuses genuinely separate telemetry modalities behind an
+availability-masked gate, reports every result under a split-regime inflation
+cascade with a per-run leakage certificate, and commits every verdict to a
+tamper-evident transparency log — with a live, in-browser demo built and
+parity-tested against the real Python implementation.
 
 ## What this is
 
-Four genuinely co-observed telemetry modalities from the same `(host, 60s window)` —
-log template sequences, numeric network/system metrics, identity categoricals, and
-graph structure — fused by an availability-masked gate, with every result reported
-under a split-regime inflation cascade and a per-run leakage certificate.
+Four co-observed feature groups (modalities) from the same `(host, 60s window)`, drawn
+from two telemetry streams (log files and Suricata network events): log templates
+(M1, from the logs), network metrics (M2) and destination-graph structure (M4, both
+from the same Suricata flow records), and a derived host-identity group (M3). They are
+fused by an availability-masked gate, with every result reported under a split-regime
+inflation cascade and a per-run leakage certificate.
 
-The base paper's "multimodality" is three encoders reading one tabular vector; its
-autoencoder output collapses the whole latent space to a single scalar batch
-statistic; its convolution kernel has no learnable parameter; and its sidechain
-objective is invariant to the variable it optimises. See
+TESSERA fuses genuinely separate feature groups — log templates, network metrics,
+destination-graph structure and host identity — rather than three encoders reading
+one tabular vector split three ways; its GMU fusion produces a real per-modality
+latent, not a whole latent space collapsed to a single scalar batch statistic; every
+learnable component is actually learned, not a fixed-kernel convolution masquerading
+as one; and an early drafted sidechain objective for tuning segment length turned
+out to be invariant to the variable it was meant to optimise, so it was replaced. See
 [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md) for the measured findings, including our
 own corrections.
 
@@ -38,7 +45,8 @@ ledger → inclusion proof → tamper detection → optimiser:
 uv run pytest tests/test_e2e.py -q -v
 ```
 
-The two falsification findings about the base paper's sidechain optimisation:
+Two findings from evaluating candidate objectives/optimisers for sidechain
+segment-length tuning:
 
 ```bash
 uv run python -m tessera.chainsim.report
@@ -71,16 +79,34 @@ Accuracy is never the headline. At 5 % prevalence a detector with ROC-AUC 0.98 a
 rate. Primary metrics are average precision, MCC and class-conditional calibration,
 with alert volume and base-rate-corrected precision reported alongside.
 
-We do not attempt to beat the base paper's 99.4 %. That number was produced under
-conditions this harness is built to expose: a corpus pooling KDD99 with NSL-KDD — and
-NSL-KDD *is* deduplicated KDD99 — under a random split.
+TESSERA reports the number its own leakage-checked evaluation produces, not the
+higher number a leakier protocol would produce — that gap (0.928 vs 0.639 AP on the
+same data, a corpus pooling KDD99 with NSL-KDD, and NSL-KDD *is* deduplicated KDD99,
+under a random split) is measured directly, not assumed.
 
 ## Status
 
-P0 (harness) complete. See the plan for phases P1–P9.
+Phases P0 to P5 are complete: the leakage-instrumented harness (P0), real AIT
+ingest, label join and window building (P1–P3), the 8-replica leave-one-replica-out
+evaluation (P4) and the TESSERA-base neural model on real data (P5). The measured
+findings, including the ones that went against us, are in [RESULTS.md](RESULTS.md)
+and [NEGATIVE_RESULTS.md](NEGATIVE_RESULTS.md) (which records the findings of each
+phase). Phases P6–P9 of the plan remain.
+
+The static demo in [`web/`](web/README.md) is complete and parity-tested against the
+Python model and ledger (`cd web && npm test`). It runs locally with `just serve` and
+is built for GitHub Pages; see [web/README.md](web/README.md).
 
 ## Licence
 
 Code: MIT. Derived data artifacts inherit **CC BY-NC-SA 4.0** from the AIT Log Data
-Set (Landauer et al., Zenodo 19483937); see [LICENSE-DATA](LICENSE-DATA). Derived
-features are regenerated locally rather than redistributed.
+Set (Landauer et al., Zenodo 19483937); see [LICENSE-DATA](LICENSE-DATA). The licence
+allows non-commercial redistribution under the same terms; by project policy, derived
+features are regenerated locally rather than redistributed, which keeps ShareAlike out
+of the code. The demo site ships aggregate statistics only.
+
+The dataset authors ask users to cite:
+
+> M. Landauer et al., "Maintainable Log Datasets for Evaluation of Intrusion Detection
+> Systems", *IEEE Transactions on Dependable and Secure Computing*, vol. 20, no. 4,
+> pp. 3466–3482, 2023.

@@ -1,14 +1,14 @@
-"""Chain-simulator report: optimiser comparison, optimality gaps, and the two
-falsification findings about the base paper's sidechain optimisation."""
+"""Chain-simulator report: optimiser comparison, optimality gaps, and findings from
+evaluating candidate objectives and optimisers for sidechain segment-length tuning."""
 
 from __future__ import annotations
 
 import json
 
-from tessera.chainsim.basepaper_fh import demonstrate_invariance
 from tessera.chainsim.benchmark import HI, LO, run
 from tessera.chainsim.cost_model import Workload, calibrate, evaluate_cost
 from tessera.chainsim.optimisers import eho
+from tessera.chainsim.segment_objective import demonstrate_objective_invariance
 from tessera.paths import TABLES_DIR, ensure_dirs
 
 
@@ -49,9 +49,9 @@ def main() -> None:
     print("\n" + unreach["argument"])
     print("\n-> " + unreach["finding"])
 
-    inv = demonstrate_invariance()
+    inv = demonstrate_objective_invariance()
     print("\n" + "=" * 78)
-    print("FINDING 2 - the published objective is invariant to its own decision variable")
+    print("FINDING 2 - a candidate objective we drafted is invariant to its own decision variable")
     print("=" * 78)
     print(f"  {inv['equation']}")
     print(f"  NSC swept over {inv['nsc_values']}")

@@ -29,8 +29,8 @@ identical or near-identical all-zero vectors), **1,170 test rows byte-identical 
 a training row**. The permutation control confirms the pipeline has no bug
 (shuffled labels score at chance) — the inflation is in the *split*.
 
-This is the project's central thesis, demonstrated in its own pipeline — not only
-inferred from auditing the base paper's described methodology.
+This is the project's central thesis, measured directly in this project's own
+pipeline, not merely assumed.
 
 ### 2. A second, self-found leakage bug — in this project's own feature design
 
@@ -146,8 +146,9 @@ claim would need attack scenarios AIT does not provide.
   using two different mechanisms (the leakage certificate; the E1 halt gate).
 - The label join (P2) and window builder (P3) are correct enough to produce
   coherent, explicable results at scale, and to transfer across replicas.
-- **The base paper's methodology (99.4% accuracy, random split, pooled corpus
-  with cross-split duplicates) is exactly the failure mode measured in finding 1.**
+- **A random split over a pooled, non-deduplicated corpus is exactly the failure
+  mode measured in finding 1 — the textbook leakage setup this harness is built
+  to catch.**
 - The actual TESSERA-base neural model (not just the GBDT baseline) trains
   correctly on real multimodal data and matches the tuned classical baseline —
   and its own explanation mechanism was checked against independent evidence

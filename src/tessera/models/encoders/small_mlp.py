@@ -2,10 +2,9 @@
 
 GroupNorm, never BatchNorm - the same rule the architecture design settled on
 project-wide, for small-batch stability (a leave-one-replica-out fold's smallest
-class can have a handful of examples) and because BatchNorm statistics depend on
-what else is in the batch, which is exactly the kind of batch-composition
-dependence this project's own falsification work (the base paper's
-`trace(cov(Z))`) criticises elsewhere - a model whose own encoder had the same
+class can have a handful of examples) and because BatchNorm's batch-composition
+dependence is exactly the kind of evaluation confound this project's own
+methodology is built to avoid elsewhere; a model whose own encoder had the same
 defect would be indefensible.
 """
 

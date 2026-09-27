@@ -1,11 +1,12 @@
 """Signed-checkpoint segmentation: the correct replacement for "archive the long
 chain and mine on the short one".
 
-The base paper caps growing per-append cost by splitting the chain and continuing on
-the short part, which severs hash linkage to genesis. Here a new segment's FIRST leaf
-commits to the previous segment's root, size, last leaf hash and signature, so an
-auditor holding any past tree head can still verify inclusion in the archive. The
-cost is bounded the same way; the guarantee survives.
+Growing per-append cost is capped by splitting the chain into segments rather than
+by truncating and re-mining a short chain, which would sever hash linkage to
+genesis. Here a new segment's FIRST leaf commits to the previous segment's root,
+size, last leaf hash and signature, so an auditor holding any past tree head can
+still verify inclusion in the archive. The cost is bounded the same way; the
+guarantee survives.
 """
 
 from __future__ import annotations
@@ -32,9 +33,9 @@ class SegmentedLog:
     """A chain of segments linked by signed anchors.
 
     ``segment_length`` is the decision variable the chain simulator optimises. Note
-    that the base paper's own objective does not depend on it at all - per-block
-    read/write/hash/verify cost is independent of where the chain is cut - which is
-    demonstrated directly in ``chainsim/basepaper_fh.py``.
+    that our first draft objective for tuning it does not depend on it at all -
+    per-block read/write/hash/verify cost is independent of where the chain is cut -
+    which is demonstrated directly in ``chainsim/segment_objective.py``.
     """
 
     segment_length: int = 1024

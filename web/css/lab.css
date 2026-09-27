@@ -1,0 +1,1716 @@
+/* lab tab styles - owned by the lab module; uses tokens from base.css only.
+   Everything is namespaced .lab-* so it cannot collide with other tabs.
+   charts.css (chart marks, legend keys, tooltips) is linked from index.html. */
+
+.lab {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+.lab-top,
+.lab-card {
+  min-width: 0;
+}
+.lab-loading {
+  display: grid;
+  gap: 18px;
+}
+.lab .lab-ico,
+.lab-ico {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  line-height: 0;
+}
+.lab-ico svg {
+  width: 16px;
+  height: 16px;
+}
+.lab .notice > .notice-icon {
+  display: inline-grid;
+  place-items: center;
+}
+.lab .notice > .notice-icon svg {
+  width: 100%;
+  height: 100%;
+}
+.lab-notice-body {
+  min-width: 0;
+}
+.lab kbd {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  padding: 1px 6px;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text-2);
+}
+
+/* ------------------------------------------------------------ head */
+.lab-top {
+  display: grid;
+  gap: 14px;
+}
+.lab-head {
+  margin-bottom: 0;
+}
+.lab-head h1 {
+  max-width: 24ch;
+}
+.lab-top .notice .tag-synthetic {
+  margin-right: 4px;
+  vertical-align: 1px;
+}
+
+/* ------------------------------------------------------------ step cards */
+.lab-card {
+  padding: 22px;
+}
+/* cards receive focus (tabindex=-1) after an auto-scroll: no ring for a mouse
+   click, a card-shaped ring for keyboard users (base :focus-visible sets 4px radius) */
+.lab-card:focus {
+  outline: none;
+}
+.lab-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius);
+}
+.lab-card-head {
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.lab-head-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+.lab-step-num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.lab-head-text {
+  min-width: 0;
+}
+.lab-card-title {
+  font-size: 1.08rem;
+  margin: 3px 0 0;
+}
+.lab-sub-title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 0.86rem;
+  font-weight: 640;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.lab-sub-note {
+  font-weight: 500;
+}
+.lab-explain {
+  color: var(--text-2);
+  font-size: 0.88rem;
+  max-width: 78ch;
+  margin: 0;
+}
+
+/* ------------------------------------------------------------ segmented controls */
+.lab-seg-tall > button {
+  display: grid;
+  gap: 1px;
+  padding: 7px 14px;
+  text-align: left;
+}
+.lab-seg-main {
+  font-weight: 600;
+}
+.lab-seg-sub {
+  font-size: 0.72rem;
+  color: var(--text-3);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.lab-strategy-seg,
+.lab-model-seg {
+  display: flex;
+  margin-bottom: 12px;
+}
+.lab-strategy-seg > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.lab-rec {
+  padding: 1px 7px;
+  font-size: 0.68rem;
+}
+.lab-seg-sm {
+  padding: 2px;
+  border-radius: 9px;
+}
+.lab-seg-sm > button {
+  padding: 4px 8px;
+  font-size: 0.74rem;
+  border-radius: 7px;
+}
+
+/* ------------------------------------------------------------ 1 data */
+.lab-data-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+.lab-seed-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lab-seed-input {
+  width: 116px !important;
+  font-variant-numeric: tabular-nums;
+}
+.lab-dice {
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+}
+.lab-dice.is-rolling svg {
+  animation: labRoll var(--dur-3) var(--ease-spring);
+}
+@keyframes labRoll {
+  from {
+    transform: rotate(-180deg) scale(0.7);
+  }
+  to {
+    transform: none;
+  }
+}
+.lab-corpus .stat-value {
+  font-size: 1.35rem;
+}
+.lab-mini-stat {
+  background: var(--surface-2);
+  border-color: transparent;
+}
+
+/* ------------------------------------------------------------ 2 split */
+.lab-explain-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  animation: fadeIn var(--dur-2) var(--ease) both;
+}
+.lab-honesty {
+  flex: none;
+  padding-top: 1px;
+}
+.lab-replicas {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.lab-rep {
+  --role-c: var(--c-unused);
+  position: relative;
+  display: grid;
+  gap: 7px;
+  align-content: start;
+  padding: 13px 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+  min-width: 0;
+  transition: border-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease), transform var(--dur-2) var(--ease),
+    opacity var(--dur-2) var(--ease), background-color var(--dur-2) var(--ease);
+}
+.lab-replicas.is-swapping .lab-rep {
+  animation: fadeUp var(--dur-3) var(--ease) backwards;
+  animation-delay: calc(var(--i, 0) * 35ms);
+}
+.lab-rep::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--role-c);
+  transition: background-color var(--dur-2) var(--ease);
+}
+.lab-rep:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.lab-rep[data-role="train"] {
+  --role-c: var(--c-train);
+  border-color: color-mix(in srgb, var(--c-train) 38%, var(--border));
+}
+.lab-rep[data-role="test"] {
+  --role-c: var(--c-test);
+  border-color: color-mix(in srgb, var(--c-test) 45%, var(--border));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c-test) 7%, transparent), transparent 60%), var(--surface);
+}
+/* training AND test windows: the stripe says so in train/test colours; the
+   border stays neutral, because aqua (--c-val) means Validation on this card */
+.lab-rep[data-role="mixed"] {
+  border-color: var(--border-strong);
+}
+.lab-rep[data-role="mixed"]::before {
+  background: linear-gradient(90deg, var(--c-train) 0 50%, var(--c-test) 50% 100%);
+}
+.lab-rep[data-role="unused"] {
+  border-style: dashed;
+  background: var(--surface-2);
+}
+.lab-rep[data-role="unused"] > :not(.lab-rep-ctl) {
+  opacity: 0.55;
+}
+.lab-rep-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2px 6px;
+  min-width: 0;
+}
+/* the replica name is the main thing on the card: wrap, never truncate */
+.lab-rep-name {
+  font-weight: 650;
+  font-size: 0.9rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.lab-rep-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  font-size: 0.7rem;
+  font-weight: 620;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.lab-rep-role .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.lab-rep-nums {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  font-size: 0.76rem;
+  color: var(--text-2);
+}
+.lab-rep-nums b {
+  color: var(--text);
+  font-weight: 650;
+}
+.lab-meter {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.lab-meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--c-attack);
+  transition: width var(--dur-3) var(--ease);
+}
+.lab-rep-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  min-height: 20px;
+}
+.lab-rep-foot .pill {
+  padding: 1px 7px 1px 5px;
+  font-size: 0.68rem;
+}
+.lab-rep-ctl {
+  margin-top: 2px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+}
+.lab-switch {
+  font-size: 0.8rem;
+}
+.lab-preview-btn[aria-pressed="true"] {
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+}
+.lab-loro-note {
+  margin: -4px 0 14px;
+}
+
+/* percentage sliders */
+.lab-pcts {
+  display: grid;
+  grid-template-columns: minmax(0, 520px);
+  gap: 14px 18px;
+  margin-bottom: 18px;
+}
+.lab-pcts-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.lab-slider-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.lab-slider-val {
+  font-weight: 680;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  min-width: 3ch;
+  text-align: right;
+}
+.lab-test-pct {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 22px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  transition: color var(--dur-2) var(--ease);
+}
+.lab-test-pct.is-low {
+  color: var(--critical-ink);
+}
+
+/* live split visual */
+.lab-split-visual {
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  margin-bottom: 14px;
+  transition: opacity var(--dur-2) var(--ease), filter var(--dur-2) var(--ease);
+}
+.lab-split-visual.is-stale {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+}
+.lab-splitbar {
+  margin-bottom: 12px;
+}
+.lab-part-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.lab-part {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  min-width: 0;
+  transition: opacity var(--dur-2) var(--ease);
+}
+.lab-part.is-empty {
+  opacity: 0.55;
+}
+.lab-part-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.76rem;
+  font-weight: 620;
+  color: var(--text-2);
+}
+.lab-part-label {
+  flex: 1;
+  min-width: 0;
+}
+.lab-part-pct {
+  color: var(--text-3);
+  font-weight: 600;
+}
+.lab-part-n {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.lab-part-pos {
+  color: var(--text-3);
+}
+.lab-purge-note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 12px 0 0;
+  color: var(--text-2);
+  animation: fadeIn var(--dur-2) var(--ease) both;
+}
+.lab-purge-note .lab-ico {
+  margin-top: 2px;
+  color: var(--accent-ink);
+}
+.lab-purge-note b {
+  color: var(--text);
+}
+
+/* errors */
+.lab-errors {
+  margin-bottom: 14px;
+  animation: fadeUp var(--dur-2) var(--ease) both;
+}
+.lab-error-list {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+/* leakage certificate */
+.lab-cert {
+  padding: 16px;
+}
+.lab-cert-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.lab-cert-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.lab-cert-ico {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--accent-ink);
+}
+.lab-cert-rows {
+  display: grid;
+  gap: 6px;
+}
+.lab-cert-row {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: background-color var(--dur-3) var(--ease), border-color var(--dur-3) var(--ease);
+}
+.lab-cert-row[data-sev="fail"] {
+  background: color-mix(in srgb, var(--critical-soft) 70%, var(--surface));
+  border-color: color-mix(in srgb, var(--critical) 30%, var(--border));
+}
+.lab-cert-row[data-sev="warn"] {
+  background: color-mix(in srgb, var(--warning-soft) 70%, var(--surface));
+  border-color: color-mix(in srgb, var(--warning) 35%, var(--border));
+}
+/* the two verdicts: leakage, and (only when it falls short) test support */
+.lab-cert-verdicts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px 12px;
+}
+.lab-cert-verdict {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  min-width: 0;
+}
+/* the longer verdict pills may wrap on a phone instead of overflowing */
+.lab-cert-verdicts .pill,
+.lab-fold-summary .pill,
+.lab-check-title .pill {
+  white-space: normal;
+  max-width: 100%;
+}
+.lab-cert-group {
+  margin: 6px 0 0;
+}
+.lab-cert-group:first-child {
+  margin-top: 0;
+}
+.lab-cert-group-note {
+  font-weight: 500;
+  color: var(--text-3);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.lab-fold-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin: -4px 0 12px;
+}
+.lab-cert-row.lab-flash {
+  animation: labFlash var(--dur-4) var(--ease);
+}
+@keyframes labFlash {
+  0% {
+    transform: scale(0.985);
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+  40% {
+    transform: none;
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+.lab-cert-pill {
+  padding-top: 1px;
+}
+.lab-cert-label {
+  font-weight: 620;
+  font-size: 0.88rem;
+}
+.lab-cert-detail {
+  font-size: 0.8rem;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+.lab-cert-note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 10px 0 0;
+  color: var(--text-2);
+}
+.lab-cert-note .lab-ico {
+  margin-top: 2px;
+  color: var(--accent-ink);
+}
+.lab-cert .notice {
+  margin-top: 10px;
+  animation: fadeUp var(--dur-3) var(--ease) both;
+}
+.lab-fold-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.lab-fold-chips-label {
+  margin-right: 4px;
+}
+.lab-fold-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px 3px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--dur-2) var(--ease), border-color var(--dur-2), transform var(--dur-1) var(--ease);
+}
+.lab-fold-chip svg {
+  width: 12px;
+  height: 12px;
+}
+.lab-fold-chip.good svg {
+  color: var(--good-ink);
+}
+.lab-fold-chip.warn svg {
+  color: var(--warning-ink);
+}
+.lab-fold-chip.bad svg {
+  color: var(--critical-ink);
+}
+.lab-fold-chip:hover {
+  background: var(--surface-2);
+}
+.lab-fold-chip:active {
+  transform: scale(0.96);
+}
+.lab-fold-chip-sup {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 2px;
+  padding-left: 6px;
+  border-left: 1px solid var(--border);
+  color: var(--warning-ink);
+  font-weight: 560;
+}
+.lab-fold-chip .lab-fold-chip-sup svg {
+  color: var(--warning-ink);
+}
+.lab-fold-chip[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--text);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* ------------------------------------------------------------ 3 model */
+.lab-model-seg > button {
+  white-space: normal;
+  text-align: left;
+}
+.lab-model-badges {
+  margin: 12px 0 14px;
+  gap: 8px;
+}
+.lab-model-badges .lab-ico svg {
+  width: 13px;
+  height: 13px;
+}
+#lab-model > div[hidden] + .lab-adv,
+.lab-adv {
+  margin-top: 4px;
+}
+.lab-model-badges + div:not([hidden]) {
+  margin-bottom: 14px;
+}
+.lab-adv-sum {
+  margin-left: 6px;
+  font-weight: 500;
+}
+.lab-adv-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 22px;
+  border: 0;
+  margin: 4px 0 12px;
+  padding: 0;
+  min-width: 0;
+  transition: opacity var(--dur-2) var(--ease);
+}
+.lab-adv-grid.is-disabled .lab-slider,
+.lab-adv-grid.is-disabled .field:has(select) {
+  opacity: 0.5;
+}
+.lab-adv-note {
+  margin: 0 0 10px;
+}
+
+/* ------------------------------------------------------------ run bar */
+.lab-runbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  padding: 14px 16px 14px 18px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  z-index: 20;
+}
+@supports (backdrop-filter: blur(8px)) {
+  .lab-runbar {
+    backdrop-filter: blur(10px) saturate(1.2);
+  }
+}
+@media (min-width: 721px) {
+  .lab-runbar {
+    position: sticky;
+    bottom: 14px;
+  }
+}
+.lab-runbar-info {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+.lab-run-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.lab-run-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-weight: 560;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+/* chips are built once and updated in place: only a chip that just appeared fades in */
+.lab-run-chip.is-new {
+  animation: fadeIn var(--dur-2) var(--ease) both;
+}
+.lab-run-chip .lab-ico svg {
+  width: 13px;
+  height: 13px;
+}
+.lab-run-chip.faint {
+  background: transparent;
+  color: var(--text-3);
+}
+.lab-kbd {
+  padding-left: 2px;
+}
+.lab-runbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.lab-run-btn {
+  min-width: 250px;
+}
+.lab-run-btn:not(:disabled):not(.is-cancel) {
+  animation: glow 2.6s var(--ease) 1.2s 2;
+}
+/* a just-started run's Cancel ignores clicks for a moment (double-click guard) */
+.btn.is-arming {
+  opacity: 0.6;
+  cursor: progress;
+}
+.lab-run-btn.is-cancel {
+  --btn-bg: var(--surface);
+  --btn-fg: var(--critical-ink);
+  --btn-border: color-mix(in srgb, var(--critical) 45%, var(--border));
+  box-shadow: none;
+}
+.lab-run-btn.is-cancel:hover {
+  background: var(--critical-soft);
+}
+
+/* ------------------------------------------------------------ 4 progress */
+.lab-progress-top {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 22px;
+  align-items: center;
+}
+.lab-ring-box {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+}
+.lab-ring {
+  width: 132px;
+}
+.lab-ring-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0;
+  width: 100%;
+  text-align: center;
+}
+.lab-ring-meta dt {
+  font-size: 0.72rem;
+  color: var(--text-3);
+  font-weight: 600;
+}
+.lab-ring-meta dd {
+  margin: 2px 0 0;
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+.lab-stepper {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.lab-stepper .step-label {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+}
+.lab-step-share {
+  font-size: 0.7rem;
+  font-weight: 520;
+}
+.lab-step-idx {
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.lab-stepper .step.is-partial .step-icon {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.lab-stepper .step[data-state="skipped"] .step-label {
+  color: var(--text-2);
+}
+.lab-live {
+  margin: 14px 0 0;
+  min-height: 1.4em;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.lab-status-pill.is-running .ico {
+  animation: labPulse 1.4s ease-in-out infinite;
+}
+@keyframes labPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+#lab-progress > div > .notice {
+  margin-top: 12px;
+}
+.lab-loro-live,
+.lab-curves {
+  margin-top: 20px;
+}
+.lab-fold-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.lab-fold {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  min-width: 0;
+  transition: border-color var(--dur-2) var(--ease), background-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease);
+  animation: fadeUp var(--dur-3) var(--ease) backwards;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+.lab-fold-name {
+  font-size: 0.8rem;
+  font-weight: 640;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lab-fold-ap {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.lab-fold-state {
+  color: var(--text-3);
+  min-height: 20px;
+}
+.lab-fold[data-state="pending"] .lab-fold-ap {
+  color: var(--text-3);
+}
+.lab-fold[data-state="running"] {
+  border-color: var(--accent);
+  background: var(--surface);
+  animation: glow 1.6s var(--ease) infinite;
+}
+.lab-fold[data-state="done"] {
+  background: var(--surface);
+  border-color: color-mix(in srgb, var(--good) 35%, var(--border));
+}
+.lab-chart-box {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.lab-chart-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  font-size: 0.84rem;
+  font-weight: 630;
+  margin-bottom: 8px;
+}
+/* a chart whose box or section already shows a title: the toggle keeps its
+   title for the table caption and screen readers, but does not repeat it */
+.lab-toggle-quiet > .viz-toggle-head > .viz-toggle-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.lab-toggle-quiet > .viz-toggle-head {
+  margin-bottom: 4px;
+}
+
+/* ------------------------------------------------------------ 5 results */
+.lab-results-body {
+  display: grid;
+  gap: 22px;
+}
+.lab-empty {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 34px 16px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  color: var(--text-2);
+  background: var(--surface-2);
+}
+.lab-empty p {
+  margin: 0;
+  max-width: 52ch;
+}
+.lab-empty-sm {
+  padding: 22px 16px;
+}
+.lab-empty-ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--accent-ink);
+  margin-bottom: 4px;
+}
+.lab-empty-ico svg {
+  width: 20px;
+  height: 20px;
+}
+.lab-res-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.6fr);
+  gap: 14px;
+  align-items: stretch;
+}
+.lab-hero {
+  padding: 18px 20px;
+  align-content: start;
+  gap: 8px;
+}
+.lab-hero .stat-label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.lab-primary-pill {
+  font-size: 0.68rem;
+}
+.lab-hero-ap {
+  margin: 4px 0 2px;
+}
+.lab-pooled-note {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+.lab-pooled-note .lab-ico {
+  margin-top: 2px;
+  color: var(--accent-ink);
+}
+.lab-pooled-note b {
+  color: var(--text);
+}
+.lab-compare {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+.lab-prov {
+  flex-basis: 100%;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  overflow-wrap: anywhere;
+}
+.lab-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.lab-tile .stat-value {
+  font-size: 1.4rem;
+}
+.lab-tile-muted {
+  background: var(--surface-2);
+  border-style: dashed;
+}
+.lab-tile-muted .stat-value {
+  color: var(--text-2);
+  font-size: 1.15rem;
+}
+.lab-res-block {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.lab-res-block > .lab-sub-title {
+  margin-bottom: 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.lab-thr-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.lab-thr-row .lab-slider {
+  flex: 1 1 320px;
+}
+.lab-deploy {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--text-2);
+  font-size: 0.88rem;
+}
+.lab-deploy b {
+  color: var(--text);
+}
+.lab-deploy .lab-ico {
+  margin-top: 2px;
+  color: var(--accent-ink);
+}
+.lab-res-grid {
+  gap: 14px;
+}
+.lab-loro-stats {
+  gap: 10px;
+}
+.lab-loro-stats .stat-value {
+  font-size: 1.2rem;
+}
+.lab-table .table-wrap {
+  max-width: 100%;
+}
+.lab-breakdown {
+  gap: 14px;
+}
+.lab-breakdown .lab-chart-title {
+  margin-bottom: 6px;
+}
+.lab-checks {
+  gap: 10px;
+}
+.lab-check-line {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.lab-check-line > .lab-ico {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--surface-2);
+  color: var(--accent-ink);
+}
+.lab-check-line > div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+.lab-check-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-weight: 630;
+  font-size: 0.88rem;
+}
+.lab-check-line .hash {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+.lab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+/* why "Use this model in the Live Detector" is disabled, as visible text */
+.lab-use-reason {
+  order: 10;
+  flex-basis: 100%;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin: 0;
+}
+.lab-use-reason .lab-ico {
+  margin-top: 1px;
+}
+
+/* ------------------------------------------------------------ history */
+.lab-history-body .table td {
+  vertical-align: middle;
+}
+.lab-td-wrap {
+  white-space: normal !important;
+  min-width: 170px;
+}
+/* only the newest row fades in; re-rendering the table leaves the others still */
+.lab-hist-row.is-new {
+  animation: fadeIn var(--dur-3) var(--ease) both;
+}
+.lab-row-current td {
+  background: var(--accent-soft);
+}
+.lab-history-body .pill {
+  vertical-align: 1px;
+}
+.lab-quiet-note {
+  display: block;
+  margin-top: 3px;
+}
+.lab-gap {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.lab-takeaway {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+  color: var(--text-2);
+}
+.lab-takeaway .lab-ico {
+  margin-top: 2px;
+  color: var(--accent-ink);
+}
+.lab-gap-real {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 8px 0 0;
+}
+
+/* ------------------------------------------------------------ split experiment */
+.lab-exp {
+  position: relative;
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  background: linear-gradient(160deg, var(--accent-soft), transparent 55%), var(--surface);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.lab-exp::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--series-2), var(--accent));
+}
+.lab-exp-head {
+  margin-bottom: 10px;
+}
+.lab-exp-badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  color: var(--accent-ink);
+}
+.lab-exp-badge svg {
+  width: 20px;
+  height: 20px;
+}
+.lab-exp-eyebrow {
+  margin-bottom: 2px;
+}
+.lab-exp .lab-card-title {
+  font-size: 1.2rem;
+  margin-top: 0;
+}
+.lab-exp-lede {
+  margin: 0 0 14px;
+  max-width: 78ch;
+  color: var(--text-2);
+  font-size: 0.92rem;
+}
+.lab-exp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.lab-exp-chips .lab-run-chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  white-space: normal;
+}
+.lab-exp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+.lab-exp-go {
+  min-width: 210px;
+}
+.lab-exp-go:not(:disabled):not(.is-cancel) {
+  animation: glow 2.6s var(--ease) 1.6s 2;
+}
+.lab-exp-go.is-cancel {
+  --btn-bg: var(--surface);
+  --btn-fg: var(--critical-ink);
+  --btn-border: color-mix(in srgb, var(--critical) 45%, var(--border));
+  box-shadow: none;
+}
+.lab-exp-go.is-cancel:hover {
+  background: var(--critical-soft);
+}
+.lab-exp-hint {
+  flex-basis: 100%;
+}
+.lab-exp-runs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+  animation: fadeUp var(--dur-3) var(--ease) both;
+}
+.lab-exp-run {
+  display: grid;
+  gap: 7px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  min-width: 0;
+  transition: border-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease);
+}
+.lab-exp-run[data-state="running"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.lab-exp-run[data-state="done"] {
+  border-color: color-mix(in srgb, var(--good) 35%, var(--border));
+}
+.lab-exp-run[data-state="skipped"] {
+  border-style: dashed;
+}
+.lab-exp-run-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  min-width: 0;
+}
+.lab-exp-run-name {
+  font-weight: 650;
+  font-size: 0.9rem;
+}
+.lab-exp-run-head .pill {
+  padding: 1px 8px 1px 6px;
+  font-size: 0.7rem;
+}
+.lab-exp-run-pct {
+  margin-left: auto;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.lab-exp-run-detail {
+  color: var(--text-2);
+  min-height: 2.6em;
+  overflow-wrap: anywhere;
+}
+.lab-exp-result {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  transition: opacity var(--dur-2) var(--ease), filter var(--dur-2) var(--ease);
+}
+.lab-exp-result.is-stale {
+  opacity: 0.5;
+  filter: grayscale(0.5);
+}
+.lab-exp-grid {
+  gap: 14px;
+  align-items: stretch;
+}
+.lab-exp-panel {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.lab-exp-panel > .lab-sub-title {
+  margin-bottom: 0;
+  align-items: center;
+}
+.lab-exp-real {
+  background: linear-gradient(180deg, var(--good-soft), transparent 60%), var(--surface);
+}
+.lab-exp-gap {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.lab-exp-gap-num {
+  font-size: clamp(1.9rem, 1.5rem + 1.6vw, 2.6rem);
+  font-weight: 720;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.lab-exp-gap-label {
+  color: var(--text-2);
+  max-width: 30ch;
+}
+.lab-exp-panel .lab-takeaway {
+  margin: 0;
+}
+.lab-exp-real-note {
+  margin: 0;
+}
+.lab-exp-models {
+  margin-top: 14px;
+}
+
+/* AP comparison bars with a no-skill tick (experiment + run history) */
+.lab-cmp {
+  display: grid;
+  gap: 10px;
+}
+.lab-cmp-row {
+  display: grid;
+  grid-template-columns: minmax(0, 12rem) minmax(0, 1fr) 3.4rem;
+  grid-template-areas:
+    "label track val"
+    ". sub sub";
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 3px;
+}
+.lab-cmp-label {
+  grid-area: label;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  min-width: 0;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+.lab-cmp-label .pill {
+  padding: 1px 7px 1px 5px;
+  font-size: 0.68rem;
+}
+.lab-cmp-track {
+  grid-area: track;
+  position: relative;
+  height: 16px;
+  border-radius: 6px;
+  background: var(--surface-3);
+}
+.lab-cmp-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  border-radius: inherit;
+  transition: width var(--dur-4) var(--ease);
+}
+.lab-cmp-base {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--text);
+  box-shadow: 0 0 0 1.5px var(--surface);
+}
+.lab-cmp-val {
+  grid-area: val;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.lab-cmp-sub {
+  grid-area: sub;
+  color: var(--text-3);
+}
+.lab-cmp-sub:empty {
+  display: none;
+}
+.lab-cmp-axis-row {
+  grid-template-areas: "label track val";
+}
+.lab-cmp-axis {
+  grid-area: track;
+  position: relative;
+  height: 14px;
+  font-size: 0.68rem;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+.lab-cmp-axis > span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+}
+.lab-cmp-axis > span:first-child {
+  transform: none;
+}
+.lab-cmp-axis > span:last-child {
+  transform: translateX(-100%);
+}
+
+/* features control */
+.lab-feat {
+  margin: 0 0 14px;
+}
+.lab-feat-seg.is-disabled {
+  opacity: 0.55;
+}
+.lab-feat-seg > button:disabled {
+  cursor: not-allowed;
+}
+.lab-feat-note {
+  margin: 6px 0 0;
+  max-width: 78ch;
+}
+
+/* leakage gap groups (run history) */
+.lab-gap-group {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.lab-gap-group-title {
+  font-weight: 630;
+  color: var(--text-2);
+}
+.lab-gap-group .lab-takeaway {
+  margin: 0;
+}
+
+/* ------------------------------------------------------------ responsive */
+@media (max-width: 960px) {
+  .lab-res-head,
+  .lab-exp-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lab-part-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .lab-card {
+    padding: 16px;
+  }
+  .lab-data-controls,
+  .lab-progress-top,
+  .lab-adv-grid,
+  .lab-pcts-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lab-replicas,
+  .lab-fold-grid,
+  .lab-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .lab-seg-tall {
+    display: flex;
+    width: 100%;
+  }
+  .lab-seg-tall > button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 7px 8px;
+  }
+  .lab-strategy-seg,
+  .lab-model-seg {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+  .lab-strategy-seg > button,
+  .lab-model-seg > button {
+    white-space: normal;
+    text-align: left;
+    justify-content: space-between;
+  }
+  .lab-explain-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .lab-cert-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+  .lab-cert-verdicts {
+    justify-content: flex-start;
+  }
+  .lab-exp-runs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lab-exp-actions > .btn {
+    flex: 1 1 100%;
+    min-width: 0;
+    white-space: normal;
+  }
+  .lab-cmp-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "label val"
+      "track track"
+      "sub sub";
+  }
+  .lab-cmp-axis-row {
+    grid-template-areas: "track track";
+  }
+  .lab-cmp-axis-row > .lab-cmp-label {
+    display: none;
+  }
+  .lab-feat-seg {
+    display: flex;
+    width: 100%;
+  }
+  .lab-feat-seg > button {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: normal;
+  }
+  .lab-runbar-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+  .lab-run-btn {
+    flex: 1;
+    min-width: 0;
+  }
+  .lab-ring-box {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    justify-items: start;
+  }
+  .lab-ring-meta {
+    text-align: left;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 400px) {
+  .lab-seg-sm > button {
+    padding: 4px 6px;
+    font-size: 0.7rem;
+  }
+  .lab-rep {
+    padding: 12px 10px 10px;
+  }
+}
+
+/* ------------------------------------------------------------ no color-mix()
+   Browsers without color-mix() (Safari < 16.2, Chrome < 111, Firefox < 113)
+   drop every declaration above that uses it, since each contains var() and so
+   fails only at computed-value time. Give those rules plain token values. */
+@supports not (color: color-mix(in srgb, red, blue)) {
+  .lab-step-num {
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+  .lab-rep[data-role="train"] {
+    border-color: var(--c-train);
+  }
+  .lab-rep[data-role="test"] {
+    border-color: var(--c-test);
+    background: var(--surface);
+  }
+  .lab-cert-row[data-sev="fail"] {
+    background: var(--critical-soft);
+    border-color: var(--critical);
+  }
+  .lab-cert-row[data-sev="warn"] {
+    background: var(--warning-soft);
+    border-color: var(--warning);
+  }
+  .lab-runbar {
+    background: var(--surface);
+  }
+  .lab-run-btn.is-cancel,
+  .lab-exp-go.is-cancel {
+    --btn-border: var(--critical);
+  }
+  .lab-fold[data-state="done"],
+  .lab-exp-run[data-state="done"] {
+    border-color: var(--good);
+  }
+  .lab-exp {
+    border-color: var(--accent);
+    background: var(--surface);
+  }
+  .lab-exp-badge {
+    border: 1px solid var(--border);
+  }
+}

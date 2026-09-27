@@ -1,7 +1,7 @@
 """Fail the build if a document contains a metric that no recorded run produced.
 
-The base paper's Section IV and Conclusion disagree on three numbers - the signature
-of hand-transcribed results. This makes that failure mode impossible: every
+Two places quoting the "same" metric with silently different values is a classic
+hand-transcription failure mode. This makes that failure mode impossible: every
 metric-looking numeral in a generated document must trace back to
 ``results/index.jsonl``.
 

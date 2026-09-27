@@ -1,0 +1,115 @@
+{
+ "schema":"tessera-design-notes/v1",
+ "generated_by":"uv run python -m tessera.demo.export_web_data",
+ "generated_utc":"2026-09-27T13:45:11Z",
+ "provenance_note":"Recomputed at export time by the same calls tessera.chainsim.report makes (uv run python -m tessera.chainsim.report). The cost model's hash, sign and verify timings are measured on the exporting machine, so objective values - and possibly the optimum S by a few units - differ slightly from the run recorded in NEGATIVE_RESULTS.md N2 (kept below as recorded_run). Energy terms are modelled, not measured. design_decisions summarise the cited files; the fourth decision's numbers are written from this export's recomputed values, never the recorded run.",
+ "optimiser_comparison":{
+  "provenance":"recomputed",
+  "source":"recomputed: tessera.chainsim.benchmark.run(budget=60, seed=0, cal=calibrate(n_hash=20000, n_sign=1500))",
+  "objective":"total delay in seconds of the segmented verdict log (well-posed cost model)",
+  "search_domain":[8,65536],
+  "budget_per_metaheuristic":60,
+  "workload":{"n_entries":200000,"proof_requests":2000},
+  "calibration":{"t_hash_s":2.99029e-07,"t_sign_s":6.85329e-05,"t_verify_s":0.000149422,"measured_on":"arm64 / Darwin 25.5.0","note":"hash/sign/verify measured on this host; power constants are modelled"},
+  "ground_truth":{"optimiser":"exhaustive, every integer S (ground truth)","best_segment_length":163,"best_objective":1.03754,"n_evaluations":65529},
+  "grid_ground_truth":{
+   "optimiser":"exhaustive (ground truth)",
+   "step":8,
+   "best_segment_length":160,
+   "best_objective":1.03757,
+   "n_evaluations":8192,
+   "beaten_by":["Optuna TPE"],
+   "note":"tessera.chainsim.benchmark.run's ground truth searches every 8th S; the gaps below are measured against the every-integer search instead, so none can be negative."
+  },
+  "results":[
+   {"optimiser":"random search","best_segment_length":187,"best_objective":1.03819,"n_evaluations":60,"optimality_gap":0.000646485,"optimality_gap_pct":0.0623094},
+   {"optimiser":"Optuna TPE","best_segment_length":163,"best_objective":1.03754,"n_evaluations":60,"optimality_gap":0,"optimality_gap_pct":0},
+   {"optimiser":"EHO (NH=10, NI=6, LH=0.5)","best_segment_length":16680,"best_objective":1.35732,"n_evaluations":60,"optimality_gap":0.319784,"optimality_gap_pct":30.8213}
+  ],
+  "eho_history":[
+   {"iteration":0,"herd_spread":7524.72,"matriarch":16654.8,"n_reconfigured":10,"mean_fitness":1.40068},
+   {"iteration":1,"herd_spread":3762.36,"matriarch":16654.8,"n_reconfigured":10,"mean_fitness":1.38114},
+   {"iteration":2,"herd_spread":1881.18,"matriarch":16654.8,"n_reconfigured":10,"mean_fitness":1.36995},
+   {"iteration":3,"herd_spread":940.59,"matriarch":16704.9,"n_reconfigured":10,"mean_fitness":1.36386},
+   {"iteration":4,"herd_spread":470.295,"matriarch":16679.8,"n_reconfigured":10,"mean_fitness":1.36077},
+   {"iteration":5,"herd_spread":235.147,"matriarch":16679.8,"n_reconfigured":10,"mean_fitness":1.35906}
+  ],
+  "recorded_run":{
+   "provenance":"transcribed",
+   "label":"recorded run (NEGATIVE_RESULTS N2)",
+   "source":"transcribed from NEGATIVE_RESULTS.md N2; recorded by uv run python -m tessera.chainsim.report",
+   "ground_truth":{"best_segment_length":184,"best_objective":0.945294},
+   "results":[
+    {"optimiser":"random search","best_segment_length":187,"best_objective":0.945332,"optimality_gap_pct":0.004},
+    {"optimiser":"Optuna TPE","best_segment_length":185,"best_objective":0.945354,"optimality_gap_pct":0.006},
+    {"optimiser":"EHO (NH=10, NI=6, LH=0.5)","best_segment_length":16680,"best_objective":1.20484,"optimality_gap_pct":27.457}
+   ]
+  }
+ },
+ "eho_unreachability":{
+  "provenance":"recomputed",
+  "source":"recomputed: tessera.chainsim.optimisers.eho.demonstrate_structural_unreachability",
+  "chain_length_n":65536,
+  "rows":[
+   {"learning_rate":0.1,"reachable_interval":[3276.8,32768],"optimum_reachable":false,"best_possible_objective":1.21002},
+   {"learning_rate":0.3,"reachable_interval":[9830.4,32768],"optimum_reachable":false,"best_possible_objective":1.30609},
+   {"learning_rate":0.5,"reachable_interval":[16384,32768],"optimum_reachable":false,"best_possible_objective":1.35582},
+   {"learning_rate":0.7,"reachable_interval":[22937.6,32768],"optimum_reachable":false,"best_possible_objective":1.39112},
+   {"learning_rate":0.9,"reachable_interval":[29491.2,32768],"optimum_reachable":false,"best_possible_objective":1.41963},
+   {"learning_rate":1,"reachable_interval":[32768,32768],"optimum_reachable":false,"best_possible_objective":1.43274}
+  ],
+  "optimum":163,
+  "optimum_objective":1.03754,
+  "search_domain":[8,65536],
+  "max_learning_rate_admitting_optimum":0.00497437,
+  "optimum_reachable_for_any_tested_lh":false,
+  "argument":"Herd init confines every initial herd to [LH*N/2, N/2]. The herd update replaces a herd with the midpoint between it and the Matriarch - a convex combination of existing population members - and this update rule defines no mutation. The population therefore never leaves the convex hull of its initialisation, so the reachable set equals the herd-init interval for any herd count, iteration budget or seed.",
+  "finding":"The optimality gap is STRUCTURAL, not a tuning failure: for every tested learning rate the true optimum lies outside the interval this initialisation rule permits."
+ },
+ "fh_invariance":{
+  "provenance":"recomputed",
+  "source":"recomputed: tessera.chainsim.segment_objective.demonstrate_objective_invariance and segment_delay_objective(NSC) per value",
+  "equation":"draft: fh = (1/NEB) * sum(dr+dw+dh+dv) * em",
+  "nsc_values":[8,16,32,64,128,256,512,1024,2048],
+  "fh_values":[3.84752e-07,3.84752e-07,3.84752e-07,3.84752e-07,3.84752e-07,3.84752e-07,3.84752e-07,3.84752e-07,3.84752e-07],
+  "absolute_spread":0,
+  "relative_spread":0,
+  "d_fh_d_nsc_is_zero":true,
+  "units":"joule-seconds, which is neither a delay nor an energy",
+  "undefined_symbol":"NED (summation bound) was left unspecified in the early draft",
+  "finding":"fh is exactly constant across three orders of magnitude of NSC, so the candidate objective we drafted is invariant to the decision variable the Elephant Herding Optimizer searches over. Any reported improvement in block delay, energy or throughput therefore cannot be attributed to that optimisation.",
+  "parameters_note":"Per-block read/write/hash/verify delays and energy are segment_delay_objective's illustrative constants with seeded 1% jitter; the finding is that NSC never enters the computation, not the magnitude of fh."
+ },
+ "design_decisions":[
+  {
+   "decision":"Report average precision and MCC on leakage-checked splits, not accuracy on a random split",
+   "why":"A random split scored 29 points higher on average precision than a chronological split on the same data (0.928 vs 0.639), which is exactly the leakage this project's own harness is built to catch; reporting a random-split accuracy number instead would launder that leakage into a headline metric. Accuracy is also uninformative at AIT's low attack prevalence, so it is not reported at all.",
+   "evidence":"On real AIT data (M2-only features), a random split scores average precision 0.928 against 0.639 for a chronological split, with 28% exact-duplicate rows and 1,170 test rows byte-identical to a training row.",
+   "source_file":"RESULTS.md; README.md; src/tessera/eval/leakage.py; src/tessera/eval/metrics.py"
+  },
+  {
+   "decision":"Reject the draft delay/energy objective for chain segment-length tuning because it never depends on the segment length",
+   "why":"An objective that cannot change with the decision variable cannot certify any optimisation gain attributed to it, no matter which optimiser searches it; TESSERA replaced it with the cost model in cost_model.py, whose terms genuinely rise and fall with segment length.",
+   "evidence":"Evaluated literally, the draft objective fh is bit-identical for every candidate segment length from 8 to 2048 (absolute spread 0.0), so d(fh)/d(segment length) = 0.",
+   "source_file":"src/tessera/chainsim/segment_objective.py"
+  },
+  {
+   "decision":"Discard the draft delay/energy objective as dimensionally ill-posed before ever tuning it",
+   "why":"An objective whose units resolve to neither a delay nor an energy, and whose summation bound is never pinned down, cannot be validated by any optimiser result; the well-posed replacement (tessera.chainsim.cost_model) reports total delay in seconds instead.",
+   "evidence":"A sum of delays multiplied by an energy has units of joule-seconds, which is neither a delay nor an energy, and the draft's summation bound was left unspecified while its normaliser was fixed.",
+   "source_file":"src/tessera/chainsim/segment_objective.py"
+  },
+  {
+   "decision":"Evaluate EHO, TPE and random search against exhaustive ground truth for chain segment-length tuning, and reject EHO",
+   "why":"The herd update rule only averages existing herds and defines no mutation, so the herd population can never leave the interval it was initialised in - a structural limit, not a tuning failure, that no herd count, iteration budget or seed can fix. Random search and TPE, which are not confined this way, land within a fraction of a percent of the exhaustive optimum on the same evaluation budget.",
+   "evidence":"The reachable set at LH = 0.5 is [16384, 32768], while the exhaustive optimum in this export is S = 163 (reaching it would need LH <= 0.0050). Measured optimality gap on the same 60-evaluation budget: EHO 30.8%, random search 0.062%. The recorded run (NEGATIVE_RESULTS N2), timed on another machine, is shown separately on the optimiser card.",
+   "source_file":"NEGATIVE_RESULTS.md (N2); src/tessera/chainsim/optimisers/eho.py"
+  },
+  {
+   "decision":"Store only a hash of six fields on the ledger, never raw IPs/URLs/bodies",
+   "why":"Many blockchain-logging designs conflate immutability with security and store raw request data on-chain; once written to a shared immutable ledger, that data can never be redacted. TESSERA states its own threat model explicitly and commits only a hash, so the ledger proves retroactive tampering without ever holding personal data itself.",
+   "evidence":"Each TESSERA log entry is an RFC 6962 leaf hash (SHA-256 over a 0x00 prefix and the canonical JSON) of six fields: {window_id, host_hash, ts_bucket, verdict, score, model_git_sha}. host_hash is meant to be a salted pseudonym of the host (the salt helper in ledger/sth.py is not yet wired in, and the leaf hash itself is unsalted); no IP, geolocation, username, URL, header or body is included. The ledger proves only that an auditor holding a past signed tree head can detect retroactive modification or deletion of a retained verdict.",
+   "source_file":"THREAT_MODEL.md; src/tessera/ledger/merkle.py; src/tessera/data/contract.py"
+  }
+ ]
+}

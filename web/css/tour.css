@@ -1,0 +1,310 @@
+/* tour styles - owned by the tour module; uses tokens from base.css only.
+   The one literal colour is the backdrop scrim: a theme-neutral black at partial
+   alpha, the same kind of value base.css's own shadow tokens use. */
+
+.tour-root {
+  --tour-scrim: rgb(0 0 0 / 0.52);
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-2) var(--ease);
+}
+.tour-root.is-on {
+  opacity: 1;
+}
+.tour-root.is-leaving {
+  opacity: 0;
+  transition-duration: var(--dur-2);
+}
+.tour-root svg.ico {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+/* A transparent layer that swallows clicks on the page while the tour runs. */
+.tour-blocker {
+  position: fixed;
+  inset: 0;
+  pointer-events: auto;
+  background: transparent;
+}
+
+/* The spotlight: a rounded box whose enormous spread shadow is the dimmed backdrop. */
+.tour-spot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-radius: var(--radius);
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--accent), 0 0 0 7px var(--accent-soft), 0 0 0 200vmax var(--tour-scrim);
+  will-change: transform, width, height;
+}
+.tour-spot::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  box-shadow: 0 0 0 2px var(--accent);
+  opacity: 0;
+  animation: tourPulse 2.6s var(--ease) 0.6s infinite;
+}
+.tour-spot.is-idle {
+  box-shadow: 0 0 0 0 transparent, 0 0 0 0 transparent, 0 0 0 200vmax var(--tour-scrim);
+}
+.tour-spot.is-idle::after {
+  animation: none;
+}
+.tour-root.is-moving .tour-spot {
+  transition: transform var(--dur-3) var(--ease), width var(--dur-3) var(--ease), height var(--dur-3) var(--ease),
+    border-radius var(--dur-3) var(--ease), box-shadow var(--dur-2) var(--ease);
+}
+
+/* The popover, positioned with transform; .tour-card carries the visuals so its
+   own entrance / nudge animations never fight the positioning transform. */
+.tour-pop {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: min(372px, calc(100vw - 24px));
+  pointer-events: auto;
+  outline: none;
+}
+.tour-root.is-moving .tour-pop {
+  transition: transform var(--dur-3) var(--ease);
+}
+.tour-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px 16px 12px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  transform-origin: center;
+  animation: tourIn var(--dur-3) var(--ease-spring) both;
+}
+.tour-card.is-nudged {
+  animation: tourNudge 360ms var(--ease);
+}
+.tour-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: -4px -6px -2px 0;
+}
+.tour-count {
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  font-variant-numeric: tabular-nums;
+}
+.tour-close {
+  width: 30px;
+  height: 30px;
+}
+.tour-close svg {
+  width: 16px;
+  height: 16px;
+}
+.tour-title {
+  font-size: 1.08rem;
+  font-weight: 660;
+  line-height: 1.25;
+}
+.tour-body {
+  font-size: 0.9rem;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+.tour-card.is-swapping .tour-anim {
+  animation: tourSwap var(--dur-2) var(--ease) both;
+}
+.tour-card.is-swapping .tour-body {
+  animation-delay: 40ms;
+}
+.tour-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-2);
+  animation: fadeIn var(--dur-2) var(--ease) both;
+}
+.tour-spinner {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  animation: spin 0.8s linear infinite;
+}
+.tour-note {
+  color: var(--warning-ink);
+  background: var(--warning-soft);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+.tour-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+.tour-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.tour-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  transition: width var(--dur-2) var(--ease), background-color var(--dur-2) var(--ease);
+}
+.tour-dot.is-done {
+  background: color-mix(in srgb, var(--accent) 45%, var(--surface-3));
+}
+.tour-dot.is-current {
+  width: 18px;
+  background: var(--accent);
+}
+.tour-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.tour-actions .btn svg {
+  width: 14px;
+  height: 14px;
+}
+.tour-skip {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+.tour-keys {
+  color: var(--text-3);
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 2px;
+}
+.tour-keys kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0 4px;
+  margin-right: 2px;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  font-size: 0.68rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Small screens: dock the card to the bottom edge. */
+.tour-pop.is-docked {
+  left: 12px;
+  right: 12px;
+  top: auto;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  width: auto;
+  transform: none !important;
+}
+.tour-pop.is-docked .tour-card {
+  animation-name: tourDock;
+}
+.tour-pop.is-docked .tour-keys {
+  display: none;
+}
+.tour-pop.is-docked .tour-foot {
+  flex-direction: column;
+  align-items: stretch;
+}
+.tour-pop.is-docked .tour-dots {
+  justify-content: center;
+}
+.tour-pop.is-docked .tour-actions {
+  margin-left: 0;
+}
+.tour-pop.is-docked .tour-next {
+  flex: 1;
+}
+@media (hover: none) {
+  .tour-keys {
+    display: none;
+  }
+}
+
+@keyframes tourIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tourDock {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tourSwap {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tourNudge {
+  0%,
+  100% {
+    transform: none;
+  }
+  30% {
+    transform: scale(1.025);
+  }
+  60% {
+    transform: scale(0.99);
+  }
+}
+@keyframes tourPulse {
+  0% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-spot::after {
+    display: none;
+  }
+}

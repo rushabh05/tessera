@@ -1,7 +1,9 @@
 """THE FROZEN MODEL OUTPUT CONTRACT.
 
-Every detector - the dummy scorer, the classical baselines, the two base-paper
-reimplementations, TESSERA-base and TESSERA-EV - implements this. Freezing it now
+Every detector - the dummy scorer, the classical baselines, the two earlier draft
+reimplementations of the chain-objective design (``draft_literal``,
+``draft_charitable``, kept for comparison), TESSERA-base and TESSERA-EV -
+implements this. Freezing it now
 means the demo track can build its whole UI against a random scorer in week 1 and
 swap in the real model later without touching a line of frontend code.
 

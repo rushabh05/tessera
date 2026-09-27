@@ -3,130 +3,195 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TESSERA — Live Cloud Anomaly Demo</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>TESSERA — Cloud Anomaly Detection</title>
+  <meta name="description" content="TESSERA: an honestly-evaluated multimodal cloud anomaly detector with a tamper-evident verdict ledger, running entirely in your browser." />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z' fill='%232a78d6'/%3E%3Cpath d='M5.5 13H8.5L10 9L12.5 18L14.5 13H18.5' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <script>
+    // Apply a saved theme before first paint to avoid a flash.
+    try {
+      const t = JSON.parse(localStorage.getItem("tessera:theme"));
+      if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/charts.css" />
+  <link rel="stylesheet" href="css/detector.css" />
+  <link rel="stylesheet" href="css/overview.css" />
+  <link rel="stylesheet" href="css/lab.css" />
+  <link rel="stylesheet" href="css/results.css" />
+  <link rel="stylesheet" href="css/design.css" />
+  <link rel="stylesheet" href="css/about.css" />
+  <link rel="stylesheet" href="css/byod.css" />
+  <link rel="stylesheet" href="css/tour.css" />
 </head>
 <body>
-  <header>
-    <h1>TESSERA</h1>
-    <p class="subtitle">A real, trained multimodal anomaly detector running entirely in your browser — no server, nothing pre-computed for this page.</p>
-    <div class="badge-row">
-      <span class="badge">Real model, hand-ported to JS (byte-parity proven)</span>
-      <span class="badge">Real tamper-evident ledger (RFC 6962)</span>
-      <span class="badge" id="n-params-badge"><span id="n-params">…</span> parameters</span>
-      <span class="badge">Zero servers · zero cost</span>
-    </div>
-    <div class="notice" id="boot-error" hidden></div>
-    <div class="notice">
-      <strong>What you're looking at, honestly:</strong> the model below is the
-      exact model trained and evaluated in this project (see <code>RESULTS.md</code>
-      for real numbers on real held-out data — average precision ~0.996 across
-      independently randomised scenario replicas). Every score you see on this
-      page is computed <em>live, right now, in your browser</em>, using a
-      hand-written JavaScript forward pass verified to match the trained
-      PyTorch model to within 1e-7 (<code>web/parity.test.mjs</code>).
-      The <strong>60 example windows</strong> below are <strong>synthetic</strong> —
-      generated from summary statistics, never real captured log data (the
-      source dataset's licence forbids redistributing derived data) — so
-      treat their scores as an illustration of the mechanism, not a validation
-      of accuracy. That validation lives in the repository's test suite,
-      against real data.
+  <a class="sr-only skip-link" href="#main">Skip to content</a>
+  <div class="notice warn file-proto-notice" id="file-proto-notice" hidden>
+    <div><strong>This site needs a local web server.</strong> Browsers block its JavaScript modules when a page is opened straight from disk. From the <code>web/</code> folder run <code>python3 -m http.server 8743</code> (or <code>npm run serve</code>), then open <code>http://localhost:8743</code>.</div>
+  </div>
+  <script>
+    if (location.protocol === "file:") document.getElementById("file-proto-notice").hidden = false;
+  </script>
+
+  <header class="topbar" data-tour="nav">
+    <div class="topbar-inner">
+      <button class="brand" id="brand" type="button" aria-label="TESSERA home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="brand-mark-shield" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+            <path class="brand-mark-pulse" d="M5.5 13H8.5L10 9L12.5 18L14.5 13H18.5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="brand-text">TESSERA</span>
+      </button>
+      <nav class="tabs" id="tabs" role="tablist" aria-label="Sections"></nav>
+      <div class="topbar-actions">
+        <button class="btn sm ghost" id="tour-btn" type="button" data-tour="tour-btn">Guided tour</button>
+        <button class="icon-btn" id="theme-btn" type="button" aria-label="Toggle light/dark theme" data-tour="theme"></button>
+      </div>
     </div>
   </header>
 
-  <main>
-    <section class="panel">
-      <h2>Windows <span class="stat">(<span id="n-windows">…</span> synthetic examples · ledger root <code id="root-hex" style="font-size:0.7rem"></code>)</span></h2>
-      <div id="window-list"></div>
+  <main id="main">
+    <!-- Overview ------------------------------------------------------- -->
+    <section class="tab-panel" id="tab-overview" role="tabpanel" data-tab="overview" aria-label="Overview">
+      <div class="container"><div id="overview-mount"></div></div>
     </section>
 
-    <section class="grid-2">
-      <div class="panel">
-        <h2>Live inference</h2>
-        <p id="detail-empty">Select a window on the left.</p>
-        <div id="detail-content" hidden>
-          <div class="detail-header">
-            <div>
-              <div id="detail-host" style="color:var(--text-dim);font-size:0.85rem"></div>
-              <code id="detail-id"></code>
-            </div>
-            <div style="text-align:right">
-              <div class="detail-score-big" id="detail-score"></div>
-              <div id="detail-verdict"></div>
-            </div>
+    <!-- Live Detector (original demo; markup driven by js/main.js) ----- -->
+    <section class="tab-panel" id="tab-detector" role="tabpanel" data-tab="detector" aria-label="Live Detector">
+      <div class="container stack">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Live detector</div>
+            <h1>Score a window, then try to rewrite history</h1>
+            <p class="lede">The real trained model runs right here in your browser. Pick a window, switch a telemetry source off and watch the score change, then tamper with the ledger and see the proof break.</p>
           </div>
-
-          <h3 style="margin:0.5rem 0 0.25rem;font-size:0.9rem">Modality attribution</h3>
-          <p style="margin:0 0 0.5rem;font-size:0.8rem;color:var(--text-dim)">
-            Toggle a modality off to see the model re-score <em>live</em>, using only the remaining sources —
-            this is the same availability-masking mechanism the model uses for a genuinely offline telemetry source.
-          </p>
-          <div id="attribution-bars"></div>
-          <div class="caveat">
-            Caveat, measured and documented (see <code>NEGATIVE_RESULTS.md</code>):
-            this model's own attribution weights were found to <strong>understate</strong>
-            a modality's true importance in at least one real test — treat these bars as
-            a signal the model is using, not proof of what matters most. A proper
-            ablation study (also in the repo) is the reliable measure.
-          </div>
-          <div id="parity-note" hidden></div>
+          <div class="model-switch" id="model-switch" data-tour="model-switch"></div>
         </div>
-      </div>
 
-      <div class="panel">
-        <h2>Tamper-evident ledger</h2>
-        <p id="merkle-empty">Select a window to inspect its ledger entry.</p>
-        <div id="merkle-content" hidden>
-          <p style="font-size:0.85rem;color:var(--text-dim)">
-            Every verdict is committed to a Merkle transparency log — the same
-            construction used by Certificate Transparency (RFC 6962). The log
-            never stores an IP address, username, or URL: only a hash.
-          </p>
-          <div class="field-row">
-            <code id="merkle-window-id"></code>
-            <button class="action" id="verify-inclusion-btn">Verify inclusion proof</button>
-          </div>
-          <div id="inclusion-result" hidden></div>
-
-          <h3 style="margin:1rem 0 0.25rem;font-size:0.9rem">Try tampering with it</h3>
-          <p style="font-size:0.8rem;color:var(--text-dim)">
-            Edit this verdict's score as if you were an operator quietly editing history,
-            then watch what an auditor holding the original root would detect.
-          </p>
-          <div class="field-row">
-            <label style="font-size:0.85rem">new score:</label>
-            <input type="text" id="tamper-score-input" />
-            <button class="action" id="tamper-btn">Tamper &amp; check</button>
-          </div>
-          <div id="tamper-result" hidden></div>
+        <div class="row" id="detector-badges">
+          <span class="badge"><span class="dot" style="color:var(--good)"></span>JS model matches PyTorch to 4.4e-7</span>
+          <span class="badge"><span class="dot" style="color:var(--series-1)"></span>RFC 6962 Merkle ledger</span>
+          <span class="badge"><span class="dot" style="color:var(--series-3)"></span><span id="n-params">…</span>&nbsp;parameters</span>
+          <span class="badge"><span class="dot" style="color:var(--series-7)"></span>Zero servers, zero cost</span>
         </div>
+
+        <div class="notice" id="boot-error" hidden></div>
+        <div class="notice warn">
+          <svg class="notice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17.2" r=".6" fill="currentColor"/></svg>
+          <div><strong>The model is real; the example windows are synthetic.</strong> The windows below are generated from summary statistics, never real captured logs: by the project's data policy no real AIT rows are shipped (the dataset is CC BY-NC-SA 4.0, see LICENSE-DATA.md). Use them to see the mechanism, not to judge performance. The evidence is on real held-out data, in <a href="#results">Real Results</a>.</div>
+        </div>
+
+        <div class="detector-grid">
+          <section class="card" data-tour="detector-list">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Windows</div>
+                <div class="card-sub"><span id="n-windows">…</span> synthetic 60-second windows · ledger root <code id="root-hex" class="hash"></code></div>
+              </div>
+            </div>
+            <div id="window-list"></div>
+          </section>
+
+          <div class="stack">
+            <section class="card" data-tour="detector-attribution">
+              <div class="card-head">
+                <div>
+                  <div class="card-title">Live inference</div>
+                  <div class="card-sub" id="detail-model-label">Pretrained on real AIT data</div>
+                </div>
+              </div>
+              <p id="detail-empty">Select a window.</p>
+              <div id="detail-content" hidden>
+                <div class="detail-header">
+                  <div class="stack-sm">
+                    <div id="detail-host" class="card-title"></div>
+                    <code id="detail-id" class="hash"></code>
+                    <div id="detail-verdict"></div>
+                    <div id="detail-truth" class="tiny faint"></div>
+                  </div>
+                  <div class="score-gauge" id="score-gauge">
+                    <svg viewBox="0 0 120 120" aria-hidden="true">
+                      <circle class="track" cx="60" cy="60" r="50" fill="none" stroke-width="10"></circle>
+                      <circle class="arc" id="gauge-arc" cx="60" cy="60" r="50" fill="none" stroke-width="10" stroke-dasharray="314.16" stroke-dashoffset="314.16"></circle>
+                    </svg>
+                    <div class="gauge-center"><div><div class="detail-score-big" id="detail-score"></div><div class="tiny faint">attack score</div></div></div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 style="margin-bottom:4px">Which telemetry sources it used</h3>
+                  <p class="small muted" style="margin-bottom:8px">Switch a source off and the model re-scores <em>live</em> with the rest, using the same masking it uses when a real source goes offline.</p>
+                  <div id="attribution-bars"></div>
+                </div>
+                <div class="caveat">
+                  <strong>Measured caveat:</strong> these weights were found to <strong>understate</strong> a source's true importance in a real test (log templates got 14% of the weight, yet removing them cut average precision from 0.9995 to 0.9846). Read them as a hint about what the model leaned on, not as proof. The ablation study in Real Results is the reliable measure.
+                </div>
+                <div id="parity-note" hidden></div>
+              </div>
+            </section>
+
+            <section class="card" data-tour="ledger">
+              <div class="card-head">
+                <div>
+                  <div class="card-title">Tamper-evident ledger</div>
+                  <div class="card-sub">Every verdict is committed to a Merkle transparency log (the construction Certificate Transparency uses). Only hashes are stored, never an IP, username or URL.</div>
+                </div>
+              </div>
+              <p id="merkle-empty">Select a window to inspect its ledger entry.</p>
+              <div id="merkle-content" hidden>
+                <div class="field-row">
+                  <code id="merkle-window-id" class="hash"></code>
+                  <button class="btn sm" id="verify-inclusion-btn" type="button">Verify inclusion proof</button>
+                </div>
+                <div id="inclusion-result" role="status" aria-live="polite" hidden></div>
+                <div>
+                  <h3 style="margin-bottom:4px">Try tampering with it</h3>
+                  <p class="small muted">Change this verdict's score the way a dishonest operator might, then see what an auditor holding the original root can detect.</p>
+                </div>
+                <div class="field-row">
+                  <label class="label" for="tamper-score-input">New score</label>
+                  <input type="text" id="tamper-score-input" inputmode="decimal" />
+                  <button class="btn sm primary" id="tamper-btn" type="button">Tamper &amp; check</button>
+                </div>
+                <div id="tamper-result" role="status" aria-live="polite" hidden></div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div id="byod-mount"></div>
       </div>
     </section>
 
-    <section class="panel">
-      <h2>What this is, and isn't</h2>
-      <p style="font-size:0.88rem;color:var(--text-dim)">
-        TESSERA audits and rebuilds a published cloud-anomaly-detection framework
-        (Nagarjun &amp; Rajkumar, IEEE Access 2024), finds that several of its core
-        equations aren't implementable as specified and that its headline 99.4%
-        accuracy comes from a leakage-prone evaluation, and replaces it with a
-        genuinely multimodal detector evaluated honestly — chronological and
-        cross-replica splits, a full leakage certificate, and negative results
-        reported alongside positive ones. Four small encoders (log templates,
-        network metrics, identity, graph structure) feed a Gated Multimodal
-        Unit that handles a missing telemetry source by design. Full write-up,
-        source, and every reported number's derivation: see the repository.
-      </p>
+    <!-- Training Lab --------------------------------------------------- -->
+    <section class="tab-panel" id="tab-lab" role="tabpanel" data-tab="lab" aria-label="Training Lab">
+      <div class="container"><div id="lab-mount"></div></div>
+    </section>
+
+    <!-- Real Results --------------------------------------------------- -->
+    <section class="tab-panel" id="tab-results" role="tabpanel" data-tab="results" aria-label="Real Results">
+      <div class="container"><div id="results-mount"></div></div>
+    </section>
+
+    <!-- Design Decisions ------------------------------------------------ -->
+    <section class="tab-panel" id="tab-design" role="tabpanel" data-tab="design" aria-label="Design Decisions">
+      <div class="container"><div id="design-mount"></div></div>
+    </section>
+
+    <!-- About ---------------------------------------------------------- -->
+    <section class="tab-panel" id="tab-about" role="tabpanel" data-tab="about" aria-label="About">
+      <div class="container"><div id="about-mount"></div></div>
     </section>
   </main>
 
-  <footer>
-    Model calibration statistics derived from the AIT Log Data Set V2.1
-    (Landauer et al., CC BY-NC-SA 4.0) — summary statistics only; no raw log
-    data is included on this page. This page runs entirely client-side: no
-    data you interact with here is sent anywhere.
+  <footer class="site-footer">
+    <span>Model statistics derived from the AIT Log Data Set V2.1 (Landauer et al., CC BY-NC-SA 4.0). Summary statistics only; no raw log data on this site.</span>
+    <span>Runs entirely in your browser. Nothing you do here is sent anywhere.</span>
   </footer>
 
-  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

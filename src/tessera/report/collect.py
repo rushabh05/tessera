@@ -31,8 +31,8 @@ MODEL_ORDER = [
     "iforest",
     "rf",
     "lightgbm",
-    "basepaper_literal",
-    "basepaper_charitable",
+    "draft_literal",
+    "draft_charitable",
     "tessera_base",
     "tessera_ev",
 ]

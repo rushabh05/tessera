@@ -4,7 +4,9 @@
   "type": "module",
   "description": "TESSERA static demo: hand-written JS forward pass + Merkle ledger, proven byte-identical to the real Python model and ledger.",
   "scripts": {
-    "test": "node parity.test.mjs && node merkle-parity.test.mjs",
+    "test": "node parity.test.mjs && node merkle-parity.test.mjs && node --test \"tests/*.test.mjs\" && node dev/check-imports.mjs",
+    "test:unit": "node --test \"tests/*.test.mjs\"",
+    "check:imports": "node dev/check-imports.mjs",
     "serve": "python3 -m http.server 8743"
   }
 }

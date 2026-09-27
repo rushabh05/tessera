@@ -1,8 +1,9 @@
 """Metrics, ordered so the informative ones lead and accuracy cannot headline.
 
 At 1-8% attack prevalence, accuracy is dominated by the benign class: a detector
-that predicts "benign" for everything scores 99%+ and detects nothing. The base
-paper headlines 99.4% accuracy. This module therefore puts average precision first,
+that predicts "benign" for everything scores 99%+ and detects nothing, so a
+headline accuracy number is actively misleading at low prevalence. This module
+therefore puts average precision first,
 reports MCC, and makes the deployment consequence explicit through alert volume and
 P(attack | alert) at realistic base rates.
 

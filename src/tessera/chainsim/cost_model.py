@@ -1,10 +1,11 @@
 """Cost model for the segmented verdict log, with constants MEASURED on this machine.
 
-Why this exists. The base paper optimises segment length with
+Why this exists. Our first draft objective for tuning segment length was
 ``fh = (1/NEB) * sum(dr + dw + dh + dv) * em`` - the summed read, write, hash and
 verify delays times mining energy. Per-block read/write/hash/verify cost does not
 depend on WHERE the chain is cut, so that objective is constant in its own decision
-variable. Optimising it cannot change anything (demonstrated in ``basepaper_fh.py``).
+variable. Optimising it cannot change anything (demonstrated in
+``segment_objective.py``).
 
 A well-posed objective needs terms that genuinely vary with segment length S:
 
@@ -16,7 +17,7 @@ A well-posed objective needs terms that genuinely vary with segment length S:
 
 Getting this model right took two corrections, both recorded here because a cost
 model that does not reward the decision it is making is the same class of error as
-the base paper's.
+the draft objective it replaced.
 
 1. A first version charged a LINEAR SCAN of every archived segment per proof
    request. That term (``requests * n_segments * t_seek``) reached 1500 s at S=16 and

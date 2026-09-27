@@ -1,8 +1,9 @@
 """The five leakage controls. Every run emits all of them.
 
-The base paper reports 99.4% accuracy on a corpus formed by pooling AWS/Azure/GCP
-logs with NSL-KDD, UNSW-NB15, KDD99, CERT and NAB under a random split. Two
-mechanisms can produce a number like that without any detection capability:
+Pooling multiple environments and evaluating with a random split, without
+deduplication, is a textbook leakage setup - e.g. pooling AWS/Azure/GCP logs with
+NSL-KDD, UNSW-NB15, KDD99, CERT and NAB under a random split. Two mechanisms can
+produce a high-accuracy number like that without any detection capability:
 
 1. **Duplicate records across the split.** NSL-KDD *is* deduplicated KDD99, so
    pooling both puts identical rows on either side of a random split.
@@ -12,7 +13,8 @@ mechanisms can produce a number like that without any detection capability:
 
 These controls measure both, plus a group-overlap assertion, a shortcut floor and a
 permutation check. They are diagnostics run on *our* pipeline, and the same code
-quantifies the base paper's pooled corpus as a negative control.
+quantifies a pooled, undeduplicated corpus like the one above as a negative
+control.
 """
 
 from __future__ import annotations
@@ -228,10 +230,10 @@ def mask_only_score(
 def provenance_auc(X: np.ndarray, source: np.ndarray, *, seed: int = 0, cv: int = 3) -> dict:
     """How identifiable is a row's SOURCE DATASET from its features?
 
-    Run on the pooled reconstruction of the base paper's corpus, this quantifies how
-    much of a 99.x% headline is obtainable from schema signature alone. A high value
-    means the pooled table is separable by provenance, so a classifier can route on
-    "which dataset is this" instead of "is this an attack".
+    Run on a pooled, undeduplicated multi-environment corpus, this quantifies how
+    much of a high-accuracy headline is obtainable from schema signature alone. A
+    high value means the pooled table is separable by provenance, so a classifier
+    can route on "which dataset is this" instead of "is this an attack".
     """
     X = np.asarray(X, dtype=np.float64)
     source = np.asarray(source).ravel()

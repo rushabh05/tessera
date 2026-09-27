@@ -2,7 +2,7 @@
 
 ``check_no_hardcoded_numbers.py`` fails the build if a numeral in a generated
 document does not trace back to a recorded run, which is the mechanism that makes
-the base paper's Section-IV-vs-Conclusion contradiction impossible here.
+the classic two-places-disagree-on-the-same-metric contradiction impossible here.
 """
 
 from __future__ import annotations

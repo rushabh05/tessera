@@ -1,0 +1,183 @@
+{
+ "schema":"tessera-real-results/v1",
+ "generated_by":"uv run python -m tessera.demo.export_web_data",
+ "generated_utc":"2026-09-27T13:44:18Z",
+ "provenance_note":"Real results on real, held-out AIT data (aggregates only; no row-level data). Each block's 'provenance' says how its numbers got here: 'recomputed' = computed by this exporter from the local real-data cache at export time; 'transcribed' = copied exactly from RESULTS.md / NEGATIVE_RESULTS.md, with 'source' naming the test or ablation that recorded it. Average precision is the primary metric, MCC second; accuracy is not reported.",
+ "loro":{
+  "provenance":"recomputed",
+  "source":"recomputed by tessera.demo.export_web_data from the real AIT cache: tessera.eval.loro_real.run_leave_one_replica_out(build_all_replica_datasets()) - LightGBM (tessera.models.baselines.gbdt.make_gbdt, 200 trees, seed 0) trained on 7 replicas and tested on the 8th, MCC at threshold 0.5; the same run tests/test_loro_real.py::test_leave_one_replica_out_generalises_strongly asserts on (RESULTS.md finding 3)",
+  "model":"LightGBM, 200 trees, seed 0, raw 42-feature vectors",
+  "folds":[
+   {"held_out":"fox","n_train":174454,"n_test":25104,"n_pos_test":3437,"test_prevalence":0.13691,"average_precision":0.999783,"mcc":0.998145,"low_support":false},
+   {"held_out":"harrison","n_train":173944,"n_test":25614,"n_pos_test":6327,"test_prevalence":0.247013,"average_precision":0.976641,"mcc":0.223511,"low_support":false},
+   {"held_out":"russellmitchell","n_train":179095,"n_test":20463,"n_pos_test":5161,"test_prevalence":0.252211,"average_precision":0.999948,"mcc":0.998963,"low_support":false},
+   {"held_out":"santos","n_train":179563,"n_test":19995,"n_pos_test":3331,"test_prevalence":0.166592,"average_precision":0.999437,"mcc":0.997477,"low_support":false},
+   {"held_out":"shaw","n_train":170351,"n_test":29207,"n_pos_test":6,"test_prevalence":0.00020543,"average_precision":0.281437,"mcc":0.471332,"low_support":true},
+   {"held_out":"wardbeck","n_train":174808,"n_test":24750,"n_pos_test":2784,"test_prevalence":0.112485,"average_precision":0.999615,"mcc":0.997975,"low_support":false},
+   {"held_out":"wheeler","n_train":174796,"n_test":24762,"n_pos_test":4662,"test_prevalence":0.188272,"average_precision":0.999773,"mcc":0.99815,"low_support":false},
+   {"held_out":"wilson","n_train":169895,"n_test":29663,"n_pos_test":4981,"test_prevalence":0.16792,"average_precision":0.999577,"mcc":0.998431,"low_support":false}
+  ],
+  "summary":{
+   "n_folds":8,
+   "n_scored_folds":8,
+   "min_support":20,
+   "excluded_low_support":["shaw"],
+   "average_precision":{"mean":0.996396,"std":0.00871288,"min":0.976641,"max":0.999948,"n":7},
+   "mcc":{"mean":0.887522,"std":0.292802,"min":0.223511,"max":0.998963,"n":7},
+   "naive_all_folds_ap":{"mean":0.907026,"std":0.252905,"min":0.281437,"max":0.999948,"n":8},
+   "std_ddof":1,
+   "note":"Folds with fewer than 20 held-out positives are reported in full but excluded from the summary mean/std; naive_all_folds_ap shows what averaging them in would read."
+  }
+ },
+ "mask_only_floor":{
+  "provenance":"recomputed",
+  "source":"recomputed by tessera.demo.export_web_data from the real AIT cache: the shortcut-floor control of tessera.eval.leakage.mask_only_score (make_gbdt, 100 trees, seed 0, on the [M1, M2, M4] availability bits only) run on the same 8 leave-one-replica-out folds as loro instead of 5-fold CV; host_only and mask_and_host repeat it on m3_host_bucket alone and on both. The mask is build_real_dataset's availability array, recovered exactly from the cache (M1 and M4 from their slices, M2 from n_sources_active). Folds with fewer than 20 held-out positives are excluded from each summary, as in loro. tests/test_web_exports.py::test_shipped_mask_only_floor_is_fresh re-runs it from the cache and checks the shipped numbers.",
+  "model":"LightGBM, 100 trees, seed 0 (mask_only_score's configuration)",
+  "features":"availability mask only: [M1 present, M2 present, M4 present]",
+  "labelling_rule":"A window is an attack window only if a labelled log line falls inside it (tessera.data.ait.window_builder). AIT labels exist only for the four log files M1 is computed from, so every attack window has M1 activity by construction; Suricata events carry no labels.",
+  "folds":[
+   {"held_out":"fox","n_pos_test":3437,"average_precision":0.577711,"low_support":false},
+   {"held_out":"harrison","n_pos_test":6327,"average_precision":0.81353,"low_support":false},
+   {"held_out":"russellmitchell","n_pos_test":5161,"average_precision":0.86421,"low_support":false},
+   {"held_out":"santos","n_pos_test":3331,"average_precision":0.62784,"low_support":false},
+   {"held_out":"shaw","n_pos_test":6,"average_precision":0.00105559,"low_support":true},
+   {"held_out":"wardbeck","n_pos_test":2784,"average_precision":0.441765,"low_support":false},
+   {"held_out":"wheeler","n_pos_test":4662,"average_precision":0.63152,"low_support":false},
+   {"held_out":"wilson","n_pos_test":4981,"average_precision":0.579,"low_support":false}
+  ],
+  "summary":{"excluded_low_support":["shaw"],"average_precision":{"mean":0.647939,"std":0.145522,"min":0.441765,"max":0.86421,"n":7}},
+  "host_only":{
+   "features":"m3_host_bucket only (1 feature)",
+   "folds":[
+    {"held_out":"fox","n_pos_test":3437,"average_precision":0.40928,"low_support":false},
+    {"held_out":"harrison","n_pos_test":6327,"average_precision":0.73909,"low_support":false},
+    {"held_out":"russellmitchell","n_pos_test":5161,"average_precision":0.754741,"low_support":false},
+    {"held_out":"santos","n_pos_test":3331,"average_precision":0.497728,"low_support":false},
+    {"held_out":"shaw","n_pos_test":6,"average_precision":0.000273903,"low_support":true},
+    {"held_out":"wardbeck","n_pos_test":2784,"average_precision":0.335982,"low_support":false},
+    {"held_out":"wheeler","n_pos_test":4662,"average_precision":0.562962,"low_support":false},
+    {"held_out":"wilson","n_pos_test":4981,"average_precision":0.502563,"low_support":false}
+   ],
+   "summary":{"excluded_low_support":["shaw"],"average_precision":{"mean":0.543192,"std":0.157113,"min":0.335982,"max":0.754741,"n":7}}
+  },
+  "mask_and_host":{
+   "features":"availability mask + m3_host_bucket (4 features)",
+   "folds":[
+    {"held_out":"fox","n_pos_test":3437,"average_precision":0.64643,"low_support":false},
+    {"held_out":"harrison","n_pos_test":6327,"average_precision":0.922978,"low_support":false},
+    {"held_out":"russellmitchell","n_pos_test":5161,"average_precision":0.93835,"low_support":false},
+    {"held_out":"santos","n_pos_test":3331,"average_precision":0.692214,"low_support":false},
+    {"held_out":"shaw","n_pos_test":6,"average_precision":0.00080317,"low_support":true},
+    {"held_out":"wardbeck","n_pos_test":2784,"average_precision":0.527611,"low_support":false},
+    {"held_out":"wheeler","n_pos_test":4662,"average_precision":0.738206,"low_support":false},
+    {"held_out":"wilson","n_pos_test":4981,"average_precision":0.686568,"low_support":false}
+   ],
+   "summary":{"excluded_low_support":["shaw"],"average_precision":{"mean":0.736051,"std":0.148167,"min":0.527611,"max":0.93835,"n":7}}
+  },
+  "attack_share":{
+   "n_attack_windows":30689,
+   "n_benign_windows":168869,
+   "m1_present_rate_attack":1,
+   "m1_present_rate_benign":0.139143,
+   "patterns":{"attack":[{"a":[1,1,1],"n":30666},{"a":[1,1,0],"n":23}],"benign":[{"a":[0,1,1],"n":112760},{"a":[0,1,0],"n":32612},{"a":[1,1,1],"n":22275},{"a":[1,1,0],"n":1222}]},
+   "host":"inet-firewall",
+   "n_attack_on_host":30624,
+   "share_of_attacks_on_host":0.997882,
+   "prevalence_on_host":0.460373,
+   "prevalence_elsewhere":0.000488582
+  }
+ },
+ "leakage_duplicates":{
+  "provenance":"recomputed",
+  "source":"recomputed by tessera.demo.export_web_data on the cached russellmitchell replica with the protocol of tests/test_pipeline_real_data.py::test_random_split_is_inflated_by_duplicate_leakage_on_m2_alone (R0 = tessera.eval.splits.r0_random seed 0; R1 = r1_chronological, 600 s gap; LightGBM 200 trees, seed 0) and the leakage certificate's controls 1-2 (tessera.eval.leakage.exact_duplicates / near_duplicates over the R0 split, as in ::test_leakage_certificate_finds_real_duplicates); RESULTS.md finding 1",
+  "replica":"russellmitchell",
+  "features":"M2 only (Suricata eve.json aggregates, 24 features)",
+  "n_windows":20463,
+  "n_test_rows":4093,
+  "r0_random_ap":0.928303,
+  "r1_chronological_ap":0.638533,
+  "exact_duplicate_rate":0.28119,
+  "near_duplicate_rate":0.871329,
+  "near_duplicate_method":"simhash-32bit-random-projection",
+  "test_rows_identical_to_train":1170
+ },
+ "calendar_leak":{
+  "provenance":"transcribed",
+  "source":"transcribed from RESULTS.md (finding 2; also NEGATIVE_RESULTS.md C9 and the tessera.features.m3_identity docstring); recorded by a same-seed, same-split ablation on russellmitchell (M1+M2+M3, R0 random vs R1 chronological, LightGBM) made before the four calendar features were deleted from m3_identity.py, so no test can re-run it; the corrected state is locked in by tests/test_pipeline_real_data.py::test_calendar_features_are_not_present_in_m3 and ::test_full_feature_set_generalises_well_without_calendar_leakage",
+  "replica":"russellmitchell",
+  "rows":[
+   {"features":"M1+M2+M3 with calendar features (hour of day, day of week, is weekend, minute of hour)","r0_ap":0.9998,"r1_ap":0.5156,"gap":0.484},
+   {"features":"M1+M2+M3 without calendar features","r0_ap":1,"r1_ap":0.9813,"gap":0.019}
+  ],
+  "top_feature":"hour_of_day (importance 572; next highest 410)",
+  "note":"NEGATIVE_RESULTS.md C9 records the gaps to four decimals: 0.4843 and 0.0187.",
+  "recheck_without_calendar":{
+   "provenance":"recomputed",
+   "source":"recomputed by tessera.demo.export_web_data: the 'without calendar features' row re-run on today's cached russellmitchell replica, M1+M2+M3 columns only, protocol of tests/test_pipeline_real_data.py",
+   "r0_ap":0.999959,
+   "r1_ap":0.97438,
+   "gap":0.0255784,
+   "note":"The recorded rows above predate the current feature cache, so a re-run differs slightly; the with-calendar row cannot be re-run at all because the calendar features were deleted. The finding - calendar position leaks, and removing it closes most of the R0/R1 gap - does not depend on the difference."
+  }
+ },
+ "all_modalities_r0_r1":{
+  "provenance":"recomputed",
+  "source":"recomputed by tessera.demo.export_web_data on the cached russellmitchell replica with the protocol of tests/test_pipeline_real_data.py::test_full_feature_set_generalises_well_without_calendar_leakage (R0 random vs R1 chronological, LightGBM 200 trees, seed 0); RESULTS.md finding 2, all-four-modalities table",
+  "replica":"russellmitchell",
+  "features":"all four modalities (42 features)",
+  "r0_ap":0.999944,
+  "r0_mcc":0.998704,
+  "r1_ap":0.985271,
+  "r1_mcc":0.667299,
+  "gap":0.0146727
+ },
+ "tessera_base":{
+  "provenance":"transcribed",
+  "source":"transcribed from RESULTS.md (finding 4); recorded by tests/test_tessera_base.py::test_tessera_base_matches_lightgbm_on_real_data (slow: trains TESSERA-base on the 7 replicas other than santos, less a seeded 15% validation carve, 30 epochs with early stopping, on MPS). The LightGBM row is the santos fold of the leave-one-replica-out run, recomputed in loro.folds.",
+  "held_out":"santos",
+  "n_train_windows":152629,
+  "train_seconds":82.5,
+  "device":"MPS (Apple GPU)",
+  "epochs":30,
+  "n_parameters":5005,
+  "tessera_ap":0.9995,
+  "tessera_mcc":0.9969,
+  "lightgbm_ap":0.9994,
+  "lightgbm_mcc":0.9975
+ },
+ "attribution_vs_ablation":{
+  "provenance":"transcribed",
+  "source":"transcribed from RESULTS.md (finding 4; also NEGATIVE_RESULTS.md F9); the mean attribution and the two TESSERA-base rows are recorded by tests/test_tessera_base.py::test_gmu_attribution_does_not_match_naive_ablation_importance (slow; it asserts the direction of the gap, not these exact figures); the three GBDT single-modality rows are a one-off ablation on the same santos fold that no test re-runs",
+  "held_out":"santos",
+  "mean_attribution":{"m1_log":0.14,"m2_metrics":0.02,"m3_identity":0.83,"m4_graph":0.01},
+  "ablation":[
+   {"check":"GBDT on M1 alone","ap":0.9996,"note":"M1 alone carries nearly all the signal"},
+   {"check":"GBDT on M3 alone","ap":0.6917,"note":""},
+   {"check":"GBDT on host_bucket alone (1 feature)","ap":0.4977,"note":"MCC = 0; prevalence floor 0.1666"},
+   {"check":"TESSERA-base with M1 (full model)","ap":0.9995,"note":""},
+   {"check":"TESSERA-base without M1 (zeroed and marked unavailable)","ap":0.9846,"note":"the honest removal: M1 matters far more than its 14% gate weight says"}
+  ],
+  "finding":"The gate weights say M1 14% and M3 83%, but removing M1 costs real AP and M3's host_bucket alone is barely above the prevalence floor: gate values are a signal, never ground truth for what the model used. Per-modality ablation is the reliable importance measure."
+ },
+ "dataset":{
+  "provenance":"recomputed",
+  "source":"recomputed by tessera.demo.export_web_data from the real AIT cache (data/processed/ait/<replica>_v1.npz, built by tessera.eval.loro_real.build_all_replica_datasets); counts only",
+  "name":"AIT Log Data Set V2.1",
+  "authors":"Landauer et al.",
+  "zenodo_record":19483937,
+  "licence":"CC BY-NC-SA 4.0",
+  "subset":"3 hosts (vpn, intranet_server, inet-firewall) x 4 log sources, 60 s windows, 42 features (M1 log templates 8, M2 network metrics 24, M3 host identity 2, M4 graph structure 8)",
+  "window_seconds":60,
+  "replicas":[
+   {"id":"russellmitchell","n_windows":20463,"n_positive":5161,"prevalence":0.252211,"span_hours":113.7},
+   {"id":"santos","n_windows":19995,"n_positive":3331,"prevalence":0.166592,"span_hours":111.083},
+   {"id":"harrison","n_windows":25614,"n_positive":6327,"prevalence":0.247013,"span_hours":142.3},
+   {"id":"fox","n_windows":25104,"n_positive":3437,"prevalence":0.13691,"span_hours":139.467},
+   {"id":"wheeler","n_windows":24762,"n_positive":4662,"prevalence":0.188272,"span_hours":137.567},
+   {"id":"wardbeck","n_windows":24750,"n_positive":2784,"prevalence":0.112485,"span_hours":137.5},
+   {"id":"wilson","n_windows":29663,"n_positive":4981,"prevalence":0.16792,"span_hours":164.8},
+   {"id":"shaw","n_windows":29207,"n_positive":6,"prevalence":0.00020543,"span_hours":162.267}
+  ],
+  "totals":{"n_windows":199558,"n_positive":30689}
+ }
+}

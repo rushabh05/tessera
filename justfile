@@ -80,6 +80,21 @@ tables:
 verify-numbers:
     uv run python -m tessera.report.check_no_hardcoded_numbers
 
+# Export the static demo's data (aggregate replica stats, real results, paper audit)
+# into web/data/. Needs the local real-data cache (see tessera/eval/loro_real.py).
+web-data:
+    uv run python -m tessera.demo.export_web_data
+
+# Every static-site check: forward-pass + ledger parity against Python, the node:test
+# suites (golden sklearn/torch vectors, datagen, splits, pipeline, charts, byod) and the
+# import/export seam check. Needs Node >= 22 (glob support in `node --test`).
+web-test:
+    cd web && npm test
+
+# Serve the static demo at http://localhost:8743/ (no build step, no server logic).
+serve:
+    python3 -m http.server 8743 --directory web
+
 # ---------------------------------------------------------------- housekeeping
 
 fmt:

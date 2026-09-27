@@ -5,13 +5,16 @@ inclusion proofs (audit paths) and consistency proofs - rather than an ad-hoc ha
 chain, because those are the constructions with published verification algorithms
 that an auditor can independently check.
 
-What this replaces. The base paper stores source/destination IPs, geolocation and
-full request/response bodies on a shared immutable chain, then "archives the long
-chain and mines on the short one", which severs hash linkage to genesis and
-destroys the very tamper-evidence the design exists to provide. Here the log commits
-to a salted hash while the data stays off-chain, and segmentation is done by SIGNED
-CHECKPOINT: the first leaf of a new segment commits to the previous segment's root,
-so the archive stays verifiable from a retained tree head.
+Design goal. Storing raw PII - source/destination IPs, geolocation, full
+request/response bodies - on an immutable ledger turns permanence into a privacy
+liability: whatever goes on-chain can never be redacted. TESSERA's leaves commit
+only a hash of {window_id, host_hash, ts_bucket, verdict, score, model_git_sha}, so
+the log can be public and tamper-evident without ever being a PII sink, and the data
+stays off-chain. Segmentation is done by SIGNED CHECKPOINT rather than by
+truncating and re-mining a short chain (which would sever hash linkage to genesis
+and destroy the tamper-evidence the design exists to provide): the first leaf of a
+new segment commits to the previous segment's root, so the archive stays verifiable
+from a retained tree head.
 
 Claim licensed, and nothing stronger: *an auditor holding a past signed tree head
 can detect any retroactive modification or deletion of any retained verdict.*

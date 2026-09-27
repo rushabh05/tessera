@@ -1,0 +1,224 @@
+{
+  "optimiser_comparison": {
+    "calibration": {
+      "t_hash_s": 2.8448125231079757e-07,
+      "t_sign_s": 6.86077499606957e-05,
+      "t_verify_s": 0.00014829997268194954,
+      "t_archive_seek_s": 0.0002,
+      "t_index_step_s": 5e-06,
+      "restarts_per_100k_entries": 2.0,
+      "leaf_bytes": 32,
+      "entry_bytes": 220,
+      "cpu_active_watts": 4.0,
+      "storage_joules_per_byte": 2.5e-10,
+      "measured_on": "arm64 / Darwin 25.5.0",
+      "note": "hash/sign/verify measured on this host; power constants are modelled"
+    },
+    "workload": {
+      "n_entries": 200000,
+      "proof_requests": 2000
+    },
+    "search_range": [
+      8,
+      65536
+    ],
+    "budget_per_metaheuristic": 60,
+    "ground_truth": {
+      "optimiser": "exhaustive (ground truth)",
+      "best_segment_length": 176,
+      "best_objective": 1.0107457507758453,
+      "n_evaluations": 8192,
+      "optimality_gap": 0.0,
+      "optimality_gap_pct": 0.0
+    },
+    "results": [
+      {
+        "optimiser": "exhaustive (ground truth)",
+        "best_segment_length": 176,
+        "best_objective": 1.0107457507758453,
+        "n_evaluations": 8192,
+        "optimality_gap": 0.0,
+        "optimality_gap_pct": 0.0
+      },
+      {
+        "optimiser": "random search",
+        "best_segment_length": 187,
+        "best_objective": 1.0109247551298999,
+        "n_evaluations": 60,
+        "optimality_gap": 0.00017900435405460158,
+        "optimality_gap_pct": 0.017710126796694262
+      },
+      {
+        "optimiser": "Optuna TPE",
+        "best_segment_length": 175,
+        "best_objective": 1.0107066456243248,
+        "n_evaluations": 60,
+        "optimality_gap": -3.910515152050209e-05,
+        "optimality_gap_pct": -0.0038689404818655036
+      },
+      {
+        "optimiser": "EHO (NH=10, NI=6, LH=0.5)",
+        "best_segment_length": 16680,
+        "best_objective": 1.3099837615888887,
+        "n_evaluations": 60,
+        "optimality_gap": 0.29923801081304346,
+        "optimality_gap_pct": 29.60566597320338
+      }
+    ],
+    "eho_history": [
+      {
+        "iteration": 0,
+        "f_threshold": 0.6755754425777649,
+        "mean_fitness": 1.3511508851555298,
+        "n_reconfigured": 10,
+        "herd_spread": 7524.71890541969,
+        "matriarch": 16654.78878049942
+      },
+      {
+        "iteration": 1,
+        "f_threshold": 0.6663013889194432,
+        "mean_fitness": 1.3326027778388865,
+        "n_reconfigured": 10,
+        "herd_spread": 3762.359452709843,
+        "matriarch": 16654.78878049942
+      },
+      {
+        "iteration": 2,
+        "f_threshold": 0.6609885698717929,
+        "mean_fitness": 1.3219771397435858,
+        "n_reconfigured": 10,
+        "herd_spread": 1881.1797263549197,
+        "matriarch": 16654.78878049942
+      },
+      {
+        "iteration": 3,
+        "f_threshold": 0.6580986039952966,
+        "mean_fitness": 1.3161972079905933,
+        "n_reconfigured": 10,
+        "herd_spread": 940.589863177458,
+        "matriarch": 16704.853959958316
+      },
+      {
+        "iteration": 4,
+        "f_threshold": 0.656632294005475,
+        "mean_fitness": 1.31326458801095,
+        "n_reconfigured": 10,
+        "herd_spread": 470.29493158873083,
+        "matriarch": 16679.82137022887
+      },
+      {
+        "iteration": 5,
+        "f_threshold": 0.6558188384825077,
+        "mean_fitness": 1.3116376769650153,
+        "n_reconfigured": 10,
+        "herd_spread": 235.14746579436542,
+        "matriarch": 16679.82137022887
+      }
+    ]
+  },
+  "finding_1_unreachability": {
+    "equations": "eq. 20 (initialisation) and eq. 23 (update)",
+    "argument": "Eq. 20 confines every initial herd to [LH*N/2, N/2]. Eq. 23 replaces a herd with the midpoint between it and the Matriarch - a convex combination of existing population members - and the paper defines no mutation. The population therefore never leaves the convex hull of its initialisation, so the reachable set equals the eq. 20 interval for any herd count, iteration budget or seed.",
+    "rows": [
+      {
+        "learning_rate": 0.1,
+        "reachable_interval": [
+          3276.8,
+          32768.0
+        ],
+        "interval_width_fraction_of_range": 0.4500549383469662,
+        "true_optimum": 176,
+        "optimum_reachable": false,
+        "best_possible_value_in_interval": 1.170360786780442
+      },
+      {
+        "learning_rate": 0.3,
+        "reachable_interval": [
+          9830.4,
+          32768.0
+        ],
+        "interval_width_fraction_of_range": 0.3500427298254181,
+        "true_optimum": 176,
+        "optimum_reachable": false,
+        "best_possible_value_in_interval": 1.261390829178776
+      },
+      {
+        "learning_rate": 0.5,
+        "reachable_interval": [
+          16384.0,
+          32768.0
+        ],
+        "interval_width_fraction_of_range": 0.2500305213038701,
+        "true_optimum": 176,
+        "optimum_reachable": false,
+        "best_possible_value_in_interval": 1.308577552866386
+      },
+      {
+        "learning_rate": 0.7,
+        "reachable_interval": [
+          22937.6,
+          32768.0
+        ],
+        "interval_width_fraction_of_range": 0.15001831278232208,
+        "true_optimum": 176,
+        "optimum_reachable": false,
+        "best_possible_value_in_interval": 1.342066139962138
+      },
+      {
+        "learning_rate": 0.9,
+        "reachable_interval": [
+          29491.2,
+          32768.0
+        ],
+        "interval_width_fraction_of_range": 0.05000610426077401,
+        "true_optimum": 176,
+        "optimum_reachable": false,
+        "best_possible_value_in_interval": 1.3691311956689602
+      },
+      {
+        "learning_rate": 1.0,
+        "reachable_interval": [
+          32768.0,
+          32768.0
+        ],
+        "interval_width_fraction_of_range": 0.0,
+        "true_optimum": 176,
+        "optimum_reachable": false,
+        "best_possible_value_in_interval": 1.3815956282965933
+      }
+    ],
+    "optimum_reachable_for_any_tested_lh": false,
+    "finding": "The optimality gap is STRUCTURAL, not a tuning failure: for every tested learning rate the true optimum lies outside the interval the published initialisation equation permits."
+  },
+  "finding_2_invariance": {
+    "equation": "eq. 21: fh = (1/NEB) * sum(dr+dw+dh+dv) * em",
+    "nsc_values": [
+      8,
+      16,
+      32,
+      64,
+      128,
+      256,
+      512,
+      1024,
+      2048
+    ],
+    "fh_values": [
+      3.8475168436824553e-07,
+      3.8475168436824553e-07,
+      3.8475168436824553e-07,
+      3.8475168436824553e-07,
+      3.8475168436824553e-07,
+      3.8475168436824553e-07,
+      3.8475168436824553e-07,
+      3.8475168436824553e-07,
+      3.8475168436824553e-07
+    ],
+    "absolute_spread": 0.0,
+    "relative_spread": 0.0,
+    "d_fh_d_nsc_is_zero": true,
+    "finding": "fh is exactly constant across three orders of magnitude of NSC, so the published objective is invariant to the decision variable the Elephant Herding Optimizer searches over. Any reported improvement in block delay, energy or throughput therefore cannot be attributed to that optimisation.",
+    "units": "joule-seconds, which is neither a delay nor an energy",
+    "undefined_symbol": "NED (summation bound) is never defined in the paper"
+  }
+}

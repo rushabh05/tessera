@@ -1,0 +1,459 @@
+/* TESSERA charts (web/js/ui/charts.js). Tokens only - every colour comes from
+   base.css, so theme switches restyle charts without a re-render. Base .viz,
+   .viz-legend and .viz-tooltip live in base.css; this file adds the marks. */
+
+.viz text {
+  font-family: var(--font);
+}
+.viz svg {
+  -webkit-tap-highlight-color: transparent;
+}
+.viz svg:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ------------------------------------------------------------ axes + grid */
+.viz-grid {
+  stroke: var(--grid);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.viz-axis {
+  stroke: var(--axis);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.viz-tick {
+  font-size: 11px;
+  fill: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+.viz-cat {
+  font-size: 12px;
+  fill: var(--text-2);
+  font-weight: 540;
+}
+.viz-axis-label {
+  font-size: 11.5px;
+  fill: var(--text-2);
+  font-weight: 560;
+}
+.viz-direct-label,
+.viz-value-label {
+  font-size: 11.5px;
+  fill: var(--text-2);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.viz-value-label {
+  font-size: 11px;
+  pointer-events: none;
+}
+.viz-empty {
+  font-size: 12.5px;
+  fill: var(--text-3);
+}
+
+/* reference lines (dashed = "a reference", unlike the solid hairline grid) */
+.viz-ref {
+  stroke: var(--text-3);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  fill: none;
+}
+.viz-ref-label,
+.viz-marker-label,
+.viz-thr-label {
+  font-size: 10.5px;
+  fill: var(--text-3);
+  font-weight: 560;
+}
+.viz-ref-label-bg {
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.viz-marker-line {
+  stroke: var(--text-3);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+
+/* ------------------------------------------------------------ lines + areas */
+.viz-line-path {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.viz-area {
+  stroke: none;
+  fill-opacity: 0.1;
+}
+.viz-dot {
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+.viz-crosshair {
+  stroke: var(--text-3);
+  stroke-width: 1;
+  opacity: 0.8;
+  pointer-events: none;
+}
+.viz-hover {
+  pointer-events: none;
+}
+.viz-overlay {
+  fill: transparent;
+  cursor: crosshair;
+  touch-action: pan-y;
+}
+.viz-spark .viz-overlay {
+  cursor: default;
+}
+
+/* operating point on PR / ROC curves */
+.viz-op {
+  fill: var(--surface);
+  stroke: var(--text);
+  stroke-width: 2;
+}
+.viz-op-g {
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------ bars */
+.viz-bar {
+  transition: opacity var(--dur-1) var(--ease), filter var(--dur-1) var(--ease);
+}
+.viz-bar.is-flagged {
+  opacity: 0.55;
+}
+.viz-bar-hatch {
+  pointer-events: none;
+}
+.viz-hatch-line {
+  stroke: var(--surface);
+  stroke-width: 2.2;
+}
+.viz-hit {
+  fill: transparent;
+}
+.viz-bar-g {
+  outline: none;
+  cursor: default;
+}
+.viz-bar-g:hover .viz-bar,
+.viz-bar-g:focus-visible .viz-bar,
+.viz-bin-g:hover .viz-bar {
+  filter: brightness(1.12) saturate(1.05);
+}
+.viz-bar-g:hover .viz-hit,
+.viz-bin-g:hover .viz-hit {
+  fill: var(--text);
+  fill-opacity: 0.035;
+}
+.viz-bar-g:focus-visible .viz-hit {
+  fill: var(--accent-soft);
+  fill-opacity: 1;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.viz-range-marker {
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.viz-marker-label {
+  fill: var(--text-2);
+  font-weight: 620;
+}
+
+/* ------------------------------------------------------------ histogram threshold */
+.viz-hist {
+  touch-action: pan-y;
+}
+.viz-thr-region {
+  fill: var(--text);
+  fill-opacity: 0.035;
+  pointer-events: none;
+}
+.viz-thr-line {
+  stroke: var(--text);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+.viz-thr-label {
+  fill: var(--text-2);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.viz-thr-hit {
+  fill: transparent;
+  touch-action: none;
+}
+.viz-handle {
+  position: absolute;
+  z-index: 2;
+  width: 16px;
+  height: 30px;
+  margin: -15px 0 0 -8px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1.5px solid var(--text);
+  box-shadow: var(--shadow-md);
+  cursor: ew-resize;
+  touch-action: none;
+  display: grid;
+  place-items: center;
+  transition: transform var(--dur-1) var(--ease), box-shadow var(--dur-2) var(--ease);
+}
+.viz-handle::before {
+  /* larger invisible touch target */
+  content: "";
+  position: absolute;
+  inset: -10px -12px;
+}
+.viz-handle-grip {
+  width: 4px;
+  height: 12px;
+  border-left: 1.5px solid var(--text-3);
+  border-right: 1.5px solid var(--text-3);
+}
+.viz-handle:hover,
+.viz.is-dragging .viz-handle {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 5px var(--accent-soft), var(--shadow-md);
+}
+.viz-handle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.viz.is-dragging {
+  cursor: ew-resize;
+  user-select: none;
+}
+
+/* ------------------------------------------------------------ stacked bar */
+.viz-track {
+  fill: var(--surface-3);
+}
+.viz-stacked .viz-bar-g:hover .viz-seg,
+.viz-stacked .viz-bar-g:focus-visible .viz-seg {
+  filter: brightness(1.1);
+}
+.viz-stacked .viz-bar-g:focus-visible .viz-seg {
+  stroke: var(--text);
+  stroke-width: 2;
+}
+.viz-stacked .viz-legend {
+  margin: 10px 0 0;
+}
+
+/* ------------------------------------------------------------ confusion matrix */
+.viz-cm-head {
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--text-2);
+}
+.viz-cm-cell {
+  outline: none;
+  cursor: default;
+}
+/* A token fill so a cell is never the SVG default black: charts.js sets the
+   ramp inline (color-mix where supported, else --series-1 with fill-opacity). */
+.viz-cm-rect {
+  fill: var(--surface-2);
+  transition: filter var(--dur-1) var(--ease);
+}
+.viz-cm-cell:hover .viz-cm-rect {
+  filter: brightness(1.06);
+}
+.viz-cm-cell:focus-visible .viz-cm-rect {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.viz-cm-cap {
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--text-2);
+}
+.viz-cm-count {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  fill: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.viz-cm-pct {
+  font-size: 11.5px;
+  fill: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+/* strong (dark) cells: light ink in the light theme; the dark theme's text token is already light */
+.viz-cm-cell.strong .viz-cm-count,
+.viz-cm-cell.strong .viz-cm-cap,
+.viz-cm-cell.strong .viz-cm-pct {
+  fill: var(--surface);
+}
+:root[data-theme="dark"] .viz-cm-cell.strong .viz-cm-count,
+:root[data-theme="dark"] .viz-cm-cell.strong .viz-cm-cap,
+:root[data-theme="dark"] .viz-cm-cell.strong .viz-cm-pct {
+  fill: var(--text);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .viz-cm-cell.strong .viz-cm-count,
+  :root:not([data-theme="light"]) .viz-cm-cell.strong .viz-cm-cap,
+  :root:not([data-theme="light"]) .viz-cm-cell.strong .viz-cm-pct {
+    fill: var(--text);
+  }
+}
+
+/* ------------------------------------------------------------ ring */
+.viz.viz-ring {
+  display: flex;
+  justify-content: center;
+}
+.viz.viz-ring svg {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+}
+.viz-ring-track {
+  fill: none;
+  stroke: var(--surface-3);
+}
+.viz-ring-arc {
+  fill: none;
+  stroke-linecap: round;
+}
+.viz-ring-label {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  fill: var(--text);
+}
+.viz-ring-sub {
+  fill: var(--text-2);
+  font-weight: 560;
+}
+
+/* ------------------------------------------------------------ legend keys + tooltip keys */
+.viz-legend .viz-key {
+  flex: none;
+  display: inline-block;
+}
+.viz-key.rect {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+.viz-key.line {
+  width: 14px;
+  height: 2px;
+  border-radius: 2px;
+}
+.viz-key.hatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--key-color) 0 2.5px,
+    var(--surface) 2.5px 4.5px
+  );
+  opacity: 0.7;
+}
+.viz-key.ref {
+  width: 14px;
+  height: 0;
+  border-top: 1.5px dashed var(--text-3);
+  background: none !important;
+}
+.viz-legend-value {
+  flex: none;
+  white-space: nowrap;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+/* a very long series / class name is ellipsised instead of widening the page
+   (the item's title attribute carries the full text) */
+.viz > .viz-legend {
+  min-width: 0;
+  max-width: 100%;
+}
+.viz > .viz-legend .item {
+  min-width: 0;
+  max-width: 100%;
+}
+.viz-legend-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.viz-tooltip .tt-key {
+  display: inline-block;
+  flex: none;
+}
+.viz-tooltip .tt-key.line {
+  width: 12px;
+  height: 2px;
+  border-radius: 2px;
+}
+.viz-tooltip .tt-key.rect,
+.viz-tooltip .tt-key.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.viz-tooltip .tt-key.dot {
+  border-radius: 50%;
+}
+.viz-tooltip .tt-row .v {
+  font-weight: 650;
+  color: var(--text);
+}
+.viz-tooltip .tt-note {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 0.74rem;
+}
+
+/* ------------------------------------------------------------ table toggle */
+.viz-toggle-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.viz-toggle-title {
+  font-size: 0.86rem;
+  font-weight: 620;
+  color: var(--text-2);
+}
+.viz-toggle-btn {
+  margin-left: auto;
+}
+.viz-swap-in {
+  animation: fadeIn var(--dur-2) var(--ease) both;
+}
+
+/* halo so direct labels stay legible where they cross a line */
+.viz-op-g text,
+.viz-line .viz-direct-label {
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.viz-bars .viz-value-label {
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}

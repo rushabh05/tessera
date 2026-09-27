@@ -1,8 +1,8 @@
 """The split regimes that form the inflation cascade - this project's central figure.
 
-Reporting R0 through R4 side by side shows how much of a headline number is an
-artifact of how the data was divided. The base paper reports only the equivalent of
-R0, on pooled data containing cross-split duplicates.
+Reporting R0 through R4 side by side shows how much of a headline number is a
+percentage-based-split artifact of how the data was divided, rather than a
+detector's actual capability.
 
 * **R0** random stratified - the leakage upper bound, for comparability only.
 * **R1** chronological per testbed, with a gap at each boundary so a window

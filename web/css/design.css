@@ -1,0 +1,641 @@
+/* design tab styles - owned by the design module; uses tokens from base.css only.
+   Everything is namespaced .dsg-* so it cannot collide with other tabs.
+   charts.css (chart marks, legend keys, tooltips) is linked from index.html. */
+
+.dsg {
+  display: grid;
+  gap: 18px;
+}
+.dsg-top {
+  display: grid;
+  gap: 18px;
+}
+.dsg-head {
+  margin-bottom: 0;
+}
+.dsg-head h1 {
+  max-width: 22ch;
+}
+
+.dsg-ico {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  line-height: 0;
+}
+.dsg-ico svg {
+  width: 16px;
+  height: 16px;
+}
+.dsg .notice > .notice-icon {
+  display: inline-grid;
+  place-items: center;
+}
+.dsg .notice > .notice-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ------------------------------------------------------------ citation */
+figure.dsg-cite {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 78ch;
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  font-size: 0.86rem;
+  color: var(--text-2);
+}
+.dsg-cite-ico {
+  margin-top: 2px;
+  color: var(--accent-ink);
+}
+.dsg-cite-ico svg {
+  width: 18px;
+  height: 18px;
+}
+.dsg-cite cite {
+  font-style: italic;
+  color: var(--text);
+}
+.dsg-cite-authors {
+  font-weight: 620;
+  color: var(--text);
+}
+.dsg-cite-doi {
+  white-space: nowrap;
+}
+.dsg-cite-doi a {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+}
+
+/* ------------------------------------------------------------ hero tiles (buttons) */
+.dsg-hero {
+  gap: 14px;
+  align-items: stretch;
+}
+button.dsg-stat {
+  font: inherit;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  align-content: start;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease),
+    border-color var(--dur-2) var(--ease);
+}
+button.dsg-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+}
+button.dsg-stat:active {
+  transform: translateY(0) scale(0.985);
+  box-shadow: var(--shadow-sm);
+  transition-duration: var(--dur-1);
+}
+.dsg-stat .stat-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.dsg-stat-ico {
+  color: var(--accent-ink);
+}
+.dsg-stat-ico svg {
+  width: 15px;
+  height: 15px;
+}
+.dsg-suffix {
+  margin-left: 4px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text-2);
+}
+.dsg-stat-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 0.76rem;
+  font-weight: 620;
+  color: var(--accent-ink);
+}
+.dsg-stat-go .dsg-ico svg {
+  width: 13px;
+  height: 13px;
+  transition: transform var(--dur-2) var(--ease);
+}
+button.dsg-stat:hover .dsg-stat-go .dsg-ico svg,
+button.dsg-stat:focus-visible .dsg-stat-go .dsg-ico svg {
+  transform: translateX(3px);
+}
+
+/* ------------------------------------------------------------ section + card heads */
+.dsg-card,
+.dsg-decisions-wrap {
+  scroll-margin-top: calc(var(--topbar-h) + 16px);
+}
+.dsg-card:focus,
+.dsg-decisions-wrap:focus {
+  outline: none;
+}
+.dsg-card:focus-visible,
+.dsg-decisions-wrap:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.dsg-card {
+  display: grid;
+  gap: 14px;
+}
+.dsg-card-head {
+  display: grid;
+  gap: 6px;
+}
+.dsg-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.dsg-num {
+  font-size: 0.74rem;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+.dsg-card-title {
+  font-size: 1.3rem;
+}
+.dsg-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 18px;
+  margin-bottom: 14px;
+}
+.dsg-section-head .dsg-card-title {
+  margin-top: 6px;
+}
+.dsg-section-sub {
+  max-width: 52ch;
+  font-size: 0.84rem;
+  color: var(--text-2);
+}
+.dsg-takeaway {
+  max-width: 78ch;
+  padding: 2px 0 2px 14px;
+  border-left: 3px solid var(--accent);
+  font-size: 1.02rem;
+  font-weight: 540;
+  line-height: 1.5;
+  color: var(--text);
+}
+.dsg-context {
+  font-size: 0.8rem;
+  color: var(--text-3);
+  margin-top: -6px;
+}
+.dsg-colophon {
+  display: grid;
+  gap: 8px;
+  padding: 0 2px;
+}
+.dsg-colophon .dsg-context {
+  margin-top: 0;
+}
+.dsg-label {
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.dsg-panel {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  min-width: 0;
+}
+.dsg-panel-title {
+  font-size: 0.92rem;
+  font-weight: 620;
+}
+.dsg-panel-sub {
+  margin-top: -4px;
+  font-size: 0.78rem;
+  color: var(--text-3);
+}
+.dsg-legend {
+  margin: 0;
+}
+.dsg-legend .viz-key.line {
+  height: 2.5px;
+}
+
+/* ------------------------------------------------------------ decisions grid */
+.dsg-decisions {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr));
+}
+.dsg-decision {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  border-top: 3px solid var(--accent);
+}
+/* cards fade up one after another once the section scrolls into view.
+   fill-mode backwards so the hover lift (.card.lift) still works afterwards. */
+.dsg-decisions-wrap:not(.revealed) .dsg-decision {
+  opacity: 0;
+}
+.dsg-decisions-wrap.revealed .dsg-decision {
+  animation: fadeUp var(--dur-3) var(--ease) backwards;
+  animation-delay: calc(var(--i, 0) * 80ms + 120ms);
+}
+.dsg-decision-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.dsg-decision-n {
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+h3.dsg-decision-text {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text);
+}
+.dsg-decision-value {
+  display: grid;
+  gap: 4px;
+  padding: 8px 10px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+}
+.dsg-mono {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.dsg-evidence {
+  display: grid;
+  gap: 4px;
+}
+.dsg-evidence p {
+  font-size: 0.86rem;
+  color: var(--text-2);
+}
+.dsg-decision-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.dsg-files {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.dsg-files code {
+  font-size: 0.74rem;
+  overflow-wrap: anywhere;
+}
+.dsg-go {
+  margin-left: auto;
+  color: var(--accent-ink);
+}
+.dsg-go .dsg-ico svg {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--dur-2) var(--ease);
+}
+.dsg-go:hover .dsg-ico svg {
+  transform: translateX(3px);
+}
+a.dsg-go:hover {
+  text-decoration: none;
+}
+
+/* ------------------------------------------------------------ EHO + fh cards */
+.dsg-lower {
+  gap: 18px;
+  align-items: start;
+}
+.dsg-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.dsg-why {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  color: var(--text-2);
+}
+.dsg-why p {
+  max-width: 82ch;
+}
+.dsg-why strong {
+  color: var(--text);
+}
+.dsg-why-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.dsg-why-title .dsg-ico svg {
+  width: 14px;
+  height: 14px;
+}
+.dsg-notice {
+  font-size: 0.84rem;
+}
+.dsg-eq {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.dsg-eq code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+.dsg-chips {
+  display: grid;
+  gap: 10px;
+}
+.dsg-chip {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--dur-2) var(--ease), transform var(--dur-2) var(--ease);
+}
+.dsg-chip:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+.dsg-chip-value {
+  min-width: 3ch;
+  font-size: 1.22rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.dsg-chip-label {
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+.dsg-defects {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.dsg-defects li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 8px;
+}
+.dsg-defect-ico {
+  margin-top: 2px;
+  color: var(--warning-ink);
+}
+
+/* ------------------------------------------------------------ provenance footer */
+.dsg-foot {
+  display: grid;
+  gap: 10px;
+  margin-top: 2px;
+}
+.dsg-foot-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.dsg-foot-label {
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.dsg-cmd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 3px 3px 3px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--dur-2) var(--ease);
+}
+.dsg-cmd:hover {
+  border-color: var(--border-strong);
+}
+.dsg-cmd-label {
+  flex: none;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+code.dsg-cmd-code {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 5px 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  font-size: 0.8rem;
+  color: var(--text);
+  scrollbar-width: thin;
+}
+.dsg-copy {
+  flex: none;
+}
+.dsg-copy.is-copied {
+  color: var(--good-ink);
+}
+.dsg-copy.is-copied svg {
+  animation: pop var(--dur-3) var(--ease-spring) both;
+}
+details.dsg-src > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-2);
+  border-radius: 4px;
+}
+details.dsg-src > summary::-webkit-details-marker {
+  display: none;
+}
+details.dsg-src > summary::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-right: 1.6px solid currentColor;
+  border-bottom: 1.6px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--dur-2) var(--ease);
+}
+details.dsg-src[open] > summary::before {
+  transform: rotate(45deg);
+}
+details.dsg-src > summary:hover {
+  color: var(--text);
+}
+details.dsg-src p {
+  margin-top: 8px;
+  max-width: 96ch;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-3);
+  overflow-wrap: anywhere;
+  animation: fadeUp var(--dur-2) var(--ease) both;
+}
+details.dsg-src p strong {
+  color: var(--text-2);
+}
+
+/* ------------------------------------------------------------ what we built instead */
+.dsg-links {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+a.dsg-link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  padding: 16px;
+  color: var(--text);
+  text-decoration: none;
+}
+a.dsg-link:hover {
+  text-decoration: none;
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+a.dsg-link:active {
+  transform: translateY(0) scale(0.99);
+}
+.dsg-link-ico {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+.dsg-link-ico svg {
+  width: 18px;
+  height: 18px;
+}
+.dsg-link-body {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.dsg-link-title {
+  font-weight: 640;
+  font-size: 0.94rem;
+}
+.dsg-link-text {
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+.dsg-link-go {
+  color: var(--text-3);
+  margin-top: 6px;
+}
+.dsg-link-go svg {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+}
+a.dsg-link:hover .dsg-link-go svg,
+a.dsg-link:focus-visible .dsg-link-go svg {
+  transform: translateX(3px);
+  color: var(--accent-ink);
+}
+
+/* ------------------------------------------------------------ loading */
+.dsg-loading {
+  gap: 14px;
+}
+
+/* ------------------------------------------------------------ responsive */
+@media (max-width: 960px) {
+  .dsg-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .dsg .card {
+    padding: 16px;
+  }
+  .dsg-card-title {
+    font-size: 1.15rem;
+  }
+  .dsg-cite-doi {
+    white-space: normal;
+  }
+}

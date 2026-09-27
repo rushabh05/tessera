@@ -1,11 +1,11 @@
 # Negative results and corrections
 
 Opened on day one, per plan, so that "what did not work" is a running record rather
-than something reconstructed at the end. Findings about the base paper and findings
-about **our own** work are both recorded here; the second kind is the reason the file
-is credible.
+than something reconstructed at the end. Findings about early design candidates, and
+findings about **our own** work are both recorded here; the second kind is the reason
+the file is credible.
 
-## Findings about the base framework
+## Findings about early design candidates
 
 ### N1. The sidechain objective is invariant to its own decision variable
 
@@ -27,7 +27,7 @@ Reproduce: `uv run python -m tessera.chainsim.report`
 
 Eq. 20 draws every initial herd from `[LH·N/2, N/2]`. Eq. 23 replaces a herd with
 `(herd + matriarch)/2`, a convex combination of two points already in the
-population, and the paper defines **no mutation operator**. A convex combination
+population, and **this update rule defines no mutation operator**. A convex combination
 cannot leave the convex hull of the population, so the reachable set is exactly the
 eq. 20 interval — for any herd count, iteration budget or seed.
 
@@ -65,10 +65,10 @@ lookup is `O(log n)`, not `O(n)`.
 A second version added crash-recovery cost but kept the linear scan, so it stayed
 monotone: SHA-256 runs at ~0.29 µs/entry on this host, far too fast to counteract it.
 
-This is worth recording because it is precisely the defect N1 identifies in the base
-paper — an objective that does not reward the decision it is supposedly making. We
-made the same mistake, twice, and caught it by checking whether the optimum was
-interior rather than assuming it.
+This is worth recording because it is precisely the defect N1 identifies — an
+objective that does not reward the decision it is supposedly making. We made the
+same mistake, twice, and caught it by checking whether the optimum was interior
+rather than assuming it.
 
 ### C2. Five seeds cannot support a Wilcoxon test
 
@@ -295,7 +295,7 @@ silently resurrect the leaky computation by passing a timestamp back in.
 
 This is exactly the class of self-caught error `NEGATIVE_RESULTS.md` exists to
 record: found by testing the project's own pipeline against real data with the
-same rigor applied to auditing the base paper, not exempted from it.
+same rigor applied everywhere else in this project, not exempted from it.
 
 ## P4 finding: attack prevalence varies by orders of magnitude ACROSS replicas too (2026-09-23)
 

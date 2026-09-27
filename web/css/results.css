@@ -1,0 +1,783 @@
+/* results tab styles - owned by the results module; uses tokens from base.css only.
+   Everything is namespaced .res-* so it cannot collide with other tabs.
+   charts.css (chart marks, legend keys, tooltips) is linked from index.html. */
+
+.res {
+  display: grid;
+  gap: 18px;
+}
+.res-top {
+  display: grid;
+  gap: 18px;
+}
+.res-head {
+  margin-bottom: 0;
+}
+.res-head h1 {
+  max-width: 24ch;
+}
+.res-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* icons: icons.js returns bare <svg class="ico"> - size them here */
+.res-ico {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  line-height: 0;
+}
+.res-ico svg {
+  width: 16px;
+  height: 16px;
+}
+.res .notice > .notice-icon {
+  display: inline-grid;
+  place-items: center;
+}
+.res .notice > .notice-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ------------------------------------------------------------ reading guide */
+.res-guide {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.res-guide-item {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.res-guide-item.is-muted {
+  background: var(--surface-2);
+}
+.res-guide-item h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+.res-guide-item h3 .res-ico {
+  color: var(--accent-ink);
+}
+.res-guide-item.is-muted h3 .res-ico {
+  color: var(--text-3);
+}
+.res-guide-item p {
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+/* ------------------------------------------------------------ hero tiles (buttons) */
+.res-hero {
+  align-items: stretch;
+}
+button.res-stat {
+  font: inherit;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  align-content: start;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease),
+    border-color var(--dur-2) var(--ease), background-color var(--dur-2) var(--ease);
+}
+button.res-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+}
+button.res-stat:active {
+  transform: translateY(0) scale(0.985);
+  box-shadow: var(--shadow-sm);
+  transition-duration: var(--dur-1);
+}
+button.res-stat.primary:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+.res-stat .stat-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.res-stat-ico {
+  color: var(--accent-ink);
+}
+.res-stat-ico svg {
+  width: 15px;
+  height: 15px;
+}
+.res-stat .stat-value {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 4px;
+  margin-top: 2px;
+}
+.res-pm {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text-2);
+}
+.res-unit {
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--text-3);
+  margin-right: 2px;
+}
+.res-stat-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 0.76rem;
+  font-weight: 620;
+  color: var(--accent-ink);
+}
+.res-stat-go .res-ico svg {
+  width: 13px;
+  height: 13px;
+  transition: transform var(--dur-2) var(--ease);
+}
+button.res-stat:hover .res-stat-go .res-ico svg,
+button.res-stat:focus-visible .res-stat-go .res-ico svg {
+  transform: translateX(3px);
+}
+
+/* ------------------------------------------------------------ finding cards */
+.res-card {
+  display: grid;
+  gap: 14px;
+  scroll-margin-top: calc(var(--topbar-h) + 16px);
+}
+.res-card:focus {
+  outline: none;
+}
+.res-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.res-card-head {
+  display: grid;
+  gap: 6px;
+}
+.res-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.res-num {
+  font-size: 0.74rem;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+.res-card-title {
+  font-size: 1.3rem;
+}
+.res-takeaway {
+  max-width: 78ch;
+  padding: 2px 0 2px 14px;
+  border-left: 3px solid var(--accent);
+  font-size: 1.02rem;
+  font-weight: 540;
+  line-height: 1.5;
+  color: var(--text);
+}
+.res-takeaway-soft {
+  border-left-color: var(--border-strong);
+  font-weight: 480;
+  font-size: 0.94rem;
+  color: var(--text-2);
+}
+.res-context {
+  font-size: 0.8rem;
+  color: var(--text-3);
+  margin-top: -6px;
+}
+.res-context-end {
+  margin-top: 0;
+}
+.res-subhead {
+  margin-top: 4px;
+  font-size: 1.02rem;
+}
+
+.res-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.res-panel {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  min-width: 0;
+}
+.res-panel-title {
+  font-size: 0.92rem;
+  font-weight: 620;
+}
+.res-panel-sub {
+  font-size: 0.78rem;
+  color: var(--text-3);
+  margin-top: -4px;
+}
+.res-chart {
+  min-width: 0;
+}
+.res-legend {
+  margin: 0;
+}
+.res-legend .viz-key.line {
+  height: 2.5px;
+}
+
+/* stat chips (leakage certificate etc.) */
+.res-chips {
+  display: grid;
+  gap: 10px;
+}
+.res-chips-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.res-chip {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 12px;
+  row-gap: 1px;
+  align-items: baseline;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--dur-2) var(--ease), transform var(--dur-2) var(--ease);
+}
+.res-chip:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+.res-chip-value {
+  min-width: 4.6ch;
+  font-size: 1.22rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.res-chip-label {
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+.res-chip-sub {
+  grid-column: 2;
+  font-size: 0.74rem;
+  color: var(--text-3);
+}
+.res-chips-row .res-chip {
+  grid-template-columns: minmax(0, 1fr);
+}
+.res-chips-row .res-chip-sub {
+  grid-column: 1;
+}
+
+/* "why" block */
+.res-why {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  color: var(--text-2);
+}
+.res-why p {
+  max-width: 80ch;
+}
+.res-why-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.res-why-title .res-ico svg {
+  width: 14px;
+  height: 14px;
+}
+.res-notice {
+  font-size: 0.84rem;
+}
+
+/* ------------------------------------------------------------ split sketch (finding 1) */
+.res-strip {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.res-strip-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.res-strip-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.res-cell {
+  transition: fill var(--dur-3) var(--ease);
+}
+.res-cell.is-train {
+  fill: var(--c-train);
+}
+.res-cell.is-test {
+  fill: var(--c-test);
+}
+.res-cell.is-gap {
+  fill: var(--c-unused);
+}
+.res-bracket {
+  fill: none;
+  stroke: var(--axis);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke var(--dur-3) var(--ease), stroke-width var(--dur-3) var(--ease);
+}
+.res-bracket.is-leak {
+  stroke: var(--critical);
+  stroke-width: 2.5;
+}
+.res-leak-dot {
+  fill: var(--critical);
+  opacity: 0;
+  transform: scale(0.2);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity var(--dur-2) var(--ease), transform var(--dur-3) var(--ease-spring);
+}
+.res-leak-dot.is-leak {
+  opacity: 1;
+  transform: none;
+  transition-delay: 220ms;
+}
+.res-strip-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-3);
+  margin-top: -4px;
+}
+.res-strip-caption {
+  min-height: 2.9em;
+  font-size: 0.84rem;
+  color: var(--text-2);
+}
+
+/* ------------------------------------------------------------ finding 2 small multiples */
+.res-minis {
+  gap: 14px;
+}
+.res-mini {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-width: 0;
+}
+.res-mini-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.res-mini-title {
+  font-size: 0.92rem;
+  font-weight: 620;
+}
+.res-mini-sub {
+  font-size: 0.76rem;
+  color: var(--text-3);
+  max-width: 44ch;
+}
+
+/* ------------------------------------------------------------ finding 3 */
+.res-loro-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.res-tiles {
+  gap: 14px;
+}
+.res-notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.res-notes li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+  font-size: 0.86rem;
+  color: var(--text-2);
+}
+.res-notes li > div {
+  max-width: 84ch;
+}
+.res-notes strong {
+  color: var(--text);
+}
+.res-note-ico {
+  margin-top: 2px;
+}
+.res-note-ico svg {
+  width: 18px;
+  height: 18px;
+}
+.res-note-ico.warn {
+  color: var(--warning-ink);
+}
+.res-note-ico.info {
+  color: var(--accent-ink);
+}
+
+/* The mask-only floor: a reference level, drawn apart from the model's own numbers. */
+.res-floor-tile {
+  border-style: dashed;
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+.res-floor-tile .stat-value {
+  color: var(--text-2);
+}
+.res-floor-note {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--warning-soft);
+}
+
+/* A context line that carries a status pill ("Not re-run by any test", "One fold, one seed"). */
+.res-context-pill {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-top: 0;
+}
+.res-context-pill > span:not(.pill) {
+  flex: 1 1 22ch;
+  min-width: 0;
+}
+.res-notrerun {
+  flex: none;
+}
+
+/* ------------------------------------------------------------ finding 4 */
+.res-pair {
+  gap: 14px;
+}
+.res-attr {
+  gap: 18px;
+  align-items: start;
+}
+.res-contrast {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.res-contrast-item {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.res-contrast-k {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.res-contrast-s {
+  font-size: 0.76rem;
+  color: var(--text-3);
+}
+.res-big {
+  font-size: 1.7rem;
+  font-weight: 720;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+.res-contrast-vs {
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+/* ------------------------------------------------------------ provenance footer + commands */
+.res-foot {
+  display: grid;
+  gap: 10px;
+  margin-top: 2px;
+}
+.res-foot-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.res-foot-label {
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.res-cmd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 3px 3px 3px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--dur-2) var(--ease);
+}
+.res-cmd:hover {
+  border-color: var(--border-strong);
+}
+.res-cmd-label {
+  flex: none;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+code.res-cmd-code {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 5px 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  font-size: 0.8rem;
+  color: var(--text);
+  scrollbar-width: thin;
+}
+.res-copy {
+  flex: none;
+}
+.res-copy.is-copied {
+  color: var(--good-ink);
+}
+.res-copy.is-copied svg {
+  animation: pop var(--dur-3) var(--ease-spring) both;
+}
+details.res-src > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-2);
+  border-radius: 4px;
+}
+details.res-src > summary::-webkit-details-marker {
+  display: none;
+}
+details.res-src > summary::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-right: 1.6px solid currentColor;
+  border-bottom: 1.6px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--dur-2) var(--ease);
+}
+details.res-src[open] > summary::before {
+  transform: rotate(45deg);
+}
+details.res-src > summary:hover {
+  color: var(--text);
+}
+details.res-src p {
+  margin-top: 8px;
+  max-width: 96ch;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-3);
+  overflow-wrap: anywhere;
+  animation: fadeUp var(--dur-2) var(--ease) both;
+}
+details.res-src p strong {
+  color: var(--text-2);
+}
+
+/* ------------------------------------------------------------ dataset + reproduce */
+.res-closing {
+  align-items: start;
+}
+.res-rep {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.res-prev {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.res-prev-bar {
+  position: relative;
+  width: 56px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.res-prev-bar > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 0 999px 999px 0;
+  background: var(--c-attack);
+  transform-origin: left center;
+  animation: resGrow var(--dur-4) var(--ease) both;
+}
+.res-card:not(.revealed) .res-prev-bar > span {
+  animation-play-state: paused;
+}
+@keyframes resGrow {
+  from {
+    transform: scaleX(0);
+  }
+}
+.table tfoot td {
+  font-weight: 650;
+  border-top: 1px solid var(--border-strong);
+  border-bottom: 0;
+  background: var(--surface-2);
+}
+.res-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.res-steps li {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+.res-step-n {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-size: 0.76rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.res-step-body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.res-step-label {
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------ loading */
+.res-loading {
+  gap: 14px;
+}
+
+/* ------------------------------------------------------------ responsive */
+@media (max-width: 960px) {
+  .res-guide {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .res-split,
+  .res-closing {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .res .card {
+    padding: 16px;
+  }
+  .res-card-title {
+    font-size: 1.15rem;
+  }
+  .res-chips-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .res-chips-row .res-chip {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .res-contrast {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .res-contrast-vs {
+    justify-self: start;
+  }
+  .res-strip {
+    padding: 12px;
+  }
+}

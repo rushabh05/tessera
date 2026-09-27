@@ -28,11 +28,11 @@ from tessera.features.m3_identity import host_bucket
 from tessera.features.pipeline import M1_SLICE, M2_SLICE, M3_SLICE, M4_SLICE, N_TOTAL_FEATURES
 
 # The three real host ROLE names the model was trained on - generic network
-# roles (VPN gateway, internal firewall, web/mail server), not licensed or
+# roles (VPN gateway, intranet server, internet firewall), not licensed or
 # private data - used only to reproduce the correct host_bucket hash values.
 # Demo-facing labels are separate and shown in the UI, not these raw names.
 DEMO_HOSTS = ("vpn", "intranet_server", "inet-firewall")
-DEMO_HOST_LABELS = ("VPN Gateway", "Internal Firewall", "Web / Mail Server")
+DEMO_HOST_LABELS = ("VPN Gateway", "Intranet Server", "Internet Firewall")
 _DEMO_HOST_BUCKETS = tuple(host_bucket(h) for h in DEMO_HOSTS)
 
 # Per-feature (mean, std) for benign and attack classes, computed from real

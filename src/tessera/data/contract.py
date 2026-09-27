@@ -236,11 +236,9 @@ class WindowSet:
 class Verdict:
     """One detector output, and the only input to the ledger.
 
-    Deliberately carries no IP, username, URL, header or body. The base paper's
-    ledger stores source/destination IPs, geolocation and full request/response
-    sets on a shared immutable chain, which makes it a privacy liability rather
-    than a privacy mechanism. Here the ledger commits to a hash and the data stays
-    off-chain, so an immutable record never becomes an immutable PII leak.
+    Deliberately carries no IP, username, URL, header or body, so an immutable
+    ledger can never become an immutable PII leak. Here the ledger commits to a
+    hash and the data stays off-chain.
     """
 
     window_id: str

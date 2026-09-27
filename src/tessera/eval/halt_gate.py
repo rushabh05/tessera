@@ -5,9 +5,9 @@ one of two things is true: the chronological split is not actually chronological
 the random split is not actually leaking. Either way the split logic is wrong, and
 every downstream number is untrustworthy.
 
-The base paper reports only a random split, so this failure mode is invisible in it.
-Here the gate halts the pipeline rather than letting the grid run for three weeks on
-a broken split.
+A random split alone can't reveal this failure mode - it needs a chronological split
+to compare against. Here the gate halts the pipeline rather than letting the grid
+run for three weeks on a broken split.
 """
 
 from __future__ import annotations

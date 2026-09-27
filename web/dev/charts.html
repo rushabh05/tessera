@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chart gallery (dev)</title>
+  <meta name="robots" content="noindex" />
+  <script>
+    try {
+      const t = JSON.parse(localStorage.getItem("tessera:theme"));
+      if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/charts.css" />
+  <style>
+    .gallery { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+    .gallery .wide { grid-column: 1 / -1; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  </style>
+</head>
+<body>
+  <main class="container stack">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Developer page · not linked from the site</div>
+        <h1>Chart gallery</h1>
+        <p class="lede">Every chart in <code>js/ui/charts.js</code> with <span class="tag-synthetic">sample data</span>. The values are made up for layout and animation testing only.</p>
+      </div>
+      <div class="controls">
+        <button class="btn" id="theme" type="button">Toggle theme</button>
+        <button class="btn" id="update-all" type="button">Update all (morph)</button>
+        <button class="btn primary" id="train" type="button">Simulate training</button>
+      </div>
+    </div>
+
+    <div class="gallery">
+      <section class="card">
+        <div class="card-head"><div><div class="card-title">lineChart · live training loss</div><div class="card-sub">One series, fixed x domain, best-epoch marker. Press "Simulate training".</div></div></div>
+        <div id="c-line1"></div>
+      </section>
+      <section class="card">
+        <div class="card-head"><div><div class="card-title">lineChart · two series + reference line</div><div class="card-sub">Legend, end labels, area wash, crosshair tooltip (arrow keys when focused).</div></div></div>
+        <div id="c-line2"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><div><div class="card-title">histogram · drag the threshold</div><div class="card-sub">Benign vs attack scores, log count axis, draggable + keyboard slider.</div></div>
+          <label class="switch"><input type="checkbox" id="logy" checked /><span></span> Log scale</label></div>
+        <div id="c-hist"></div>
+      </section>
+      <section class="card">
+        <div class="card-head"><div><div class="card-title">confusionMatrix</div><div class="card-sub">Follows the histogram threshold; counts tween.</div></div></div>
+        <div id="c-cm"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><div><div class="card-title">curveChart · PR</div><div class="card-sub">Step curve, prevalence baseline, operating point follows the threshold.</div></div></div>
+        <div id="c-pr"></div>
+      </section>
+      <section class="card">
+        <div class="card-head"><div><div class="card-title">curveChart · ROC (two models)</div><div class="card-sub">Chance diagonal, legend with AUC.</div></div></div>
+        <div id="c-roc"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><div><div class="card-title">barChart + withTableToggle</div><div class="card-sub">Per-fold AP; a flagged low-support fold is hatched; dashed mean line.</div></div></div>
+        <div id="c-bar"></div>
+      </section>
+      <section class="card">
+        <div class="card-head"><div><div class="card-title">barChart · horizontal with negatives</div><div class="card-sub">MCC can be negative: bars grow left from zero.</div></div></div>
+        <div id="c-barh"></div>
+      </section>
+
+      <section class="card wide">
+        <div class="card-head"><div><div class="card-title">stackedBar · split</div><div class="card-sub">Widths animate on update.</div></div>
+          <button class="btn sm" id="resplit" type="button">Change split</button></div>
+        <div id="c-stack"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><div><div class="card-title">ring + sparkline</div><div class="card-sub">Numeric label counts up with the sweep.</div></div></div>
+        <div class="row" style="justify-content: space-around; gap: 18px">
+          <div id="c-ring" style="width: 140px"></div>
+          <div id="c-ring2" style="width: 140px"></div>
+        </div>
+        <div class="stack-sm" style="margin-top: 14px">
+          <div class="label">Sparkline</div>
+          <div id="c-spark"></div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-head"><div><div class="card-title">rangeChart · log scale</div><div class="card-sub">Reachable intervals vs an optimum marker.</div></div></div>
+        <div id="c-range"></div>
+      </section>
+
+      <section class="card wide">
+        <div class="card-head"><div><div class="card-title">Hidden-on-mount chart</div><div class="card-sub">Mounted while hidden (width 0); it renders and animates the first time it is shown.</div></div>
+          <button class="btn sm" id="reveal" type="button">Show it</button></div>
+        <div id="hidden-wrap" hidden><div id="c-hidden"></div></div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module">
+    import {
+      lineChart, curveChart, barChart, histogram, stackedBar, confusionMatrix, ring, sparkline, rangeChart, withTableToggle,
+    } from "../js/ui/charts.js";
+    import { makeRng } from "../js/lab/rng.js";
+
+    const $ = (id) => document.getElementById(id);
+    const rng = makeRng(7, "chart-gallery");
+
+    // ---- theme toggle
+    $("theme").addEventListener("click", () => {
+      const root = document.documentElement;
+      const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+      root.dataset.theme = dark ? "light" : "dark";
+      try { localStorage.setItem("tessera:theme", JSON.stringify(root.dataset.theme)); } catch (e) {}
+    });
+
+    // ---- sample scores (made up) and tiny curve helpers for the gallery only
+    function sampleScores(nBenign, nAttack, shift) {
+      const y = [], s = [];
+      const beta = (a) => { let v = 0; for (let k = 0; k < a; k++) v += rng.next(); return v / a; };
+      for (let i = 0; i < nBenign; i++) { y.push(0); s.push(Math.min(0.999, Math.pow(beta(3), 2.2))); }
+      for (let i = 0; i < nAttack; i++) { y.push(1); s.push(Math.min(0.999, 1 - Math.pow(beta(3), 1.6) * shift)); }
+      return { y, s };
+    }
+    function curves({ y, s }) {
+      const idx = s.map((_, i) => i).sort((a, b) => s[b] - s[a]);
+      const P = y.reduce((a, v) => a + v, 0), N = y.length - P;
+      let tp = 0, fp = 0;
+      const pr = { x: [], y: [], t: [] }, roc = { x: [0], y: [0], t: [Infinity] };
+      for (let k = 0; k < idx.length; k++) {
+        const i = idx[k];
+        if (y[i]) tp++; else fp++;
+        if (k < idx.length - 1 && s[idx[k + 1]] === s[i]) continue;
+        pr.x.push(tp / P); pr.y.push(tp / (tp + fp)); pr.t.push(s[i]);
+        roc.x.push(fp / N); roc.y.push(tp / P); roc.t.push(s[i]);
+      }
+      pr.x.reverse(); pr.y.reverse(); pr.t.reverse();
+      pr.x.push(0); pr.y.push(1);
+      let ap = 0; for (let k = 0; k < pr.t.length; k++) ap += (pr.x[k] - (pr.x[k + 1] ?? 0)) * pr.y[k];
+      let auc = 0; for (let k = 1; k < roc.x.length; k++) auc += (roc.x[k] - roc.x[k - 1]) * (roc.y[k] + roc.y[k - 1]) / 2;
+      return { pr, roc, ap, auc, P, N };
+    }
+    function confusion({ y, s }, thr) {
+      let tp = 0, fp = 0, tn = 0, fn = 0;
+      for (let i = 0; i < y.length; i++) { const p = s[i] >= thr; if (y[i]) p ? tp++ : fn++; else p ? fp++ : tn++; }
+      return { tp, fp, tn, fn };
+    }
+    function hist({ y, s }, n = 20) {
+      const edges = Array.from({ length: n + 1 }, (_, i) => i / n);
+      const b = new Array(n).fill(0), a = new Array(n).fill(0);
+      for (let i = 0; i < y.length; i++) { const k = Math.min(n - 1, Math.floor(s[i] * n)); (y[i] ? a : b)[k]++; }
+      return { edges, benign: b, attack: a };
+    }
+
+    let data = sampleScores(1800, 90, 0.9);
+    let cv = curves(data);
+    let thr = 0.5;
+
+    // ---- line 1: live training
+    const epochs = 30;
+    const line1 = lineChart($("c-line1"), {
+      series: [{ id: "loss", label: "Training loss", color: "train", points: [] }],
+      xLabel: "Epoch", yLabel: "Loss", xDomain: [1, epochs], height: 220, area: true,
+      ariaLabel: "Training loss per epoch (sample data)",
+    });
+    let timer = 0;
+    $("train").addEventListener("click", () => {
+      clearInterval(timer);
+      const pts = [];
+      let loss = 0.72;
+      let e = 0;
+      line1.update({ series: [{ id: "loss", label: "Training loss", color: "train", points: [] }], markers: [] });
+      timer = setInterval(() => {
+        e++;
+        loss = loss * (0.9 + rng.next() * 0.06) + 0.004;
+        pts.push({ x: e, y: loss });
+        const best = pts.reduce((b, p) => (p.y < b.y ? p : b), pts[0]);
+        line1.update({ series: [{ id: "loss", label: "Training loss", color: "train", points: pts.slice() }], markers: [{ x: best.x, label: `Best · epoch ${best.x}` }] });
+        if (e >= epochs) clearInterval(timer);
+      }, 260);
+    });
+
+    // ---- line 2: two series + ref line
+    const mk = (seed, base) => Array.from({ length: 16 }, (_, i) => ({ x: i + 1, y: base + (1 - Math.exp(-i / 4)) * 0.35 + (rng.next() - 0.5) * 0.04 }));
+    const line2Opts = () => ({
+      series: [
+        { id: "a", label: "Replica split", color: "test", points: mk(1, 0.3) },
+        { id: "b", label: "Random split", color: "train", points: mk(2, 0.45) },
+      ],
+      xLabel: "Epoch", yLabel: "Validation AP", yDomain: [0, 1], refLines: [{ y: 0.047, label: "Prevalence 0.047" }],
+      ariaLabel: "Validation AP for two split protocols (sample data)",
+    });
+    const line2 = lineChart($("c-line2"), line2Opts());
+
+    // ---- histogram + confusion + PR
+    const h0 = hist(data);
+    const cm = confusionMatrix($("c-cm"), { ...confusion(data, thr), ariaLabel: "Confusion matrix at the chosen threshold (sample data)" });
+    const pointFor = (t) => {
+      const c = confusion(data, t);
+      const rec = c.tp / Math.max(1, c.tp + c.fn), prec = c.tp + c.fp ? c.tp / (c.tp + c.fp) : 1;
+      return { x: rec, y: prec, label: `Threshold ${t.toFixed(2)}` };
+    };
+    const pr = curveChart($("c-pr"), {
+      kind: "pr",
+      series: [{ label: "Sample model", color: "series-1", x: cv.pr.x, y: cv.pr.y, auc: cv.ap, thresholds: cv.pr.t }],
+      baseline: cv.P / (cv.P + cv.N), point: pointFor(thr), ariaLabel: "Precision-recall curve (sample data)",
+    });
+    const histo = histogram($("c-hist"), {
+      edges: h0.edges,
+      series: [{ label: "Benign", color: "benign", counts: h0.benign }, { label: "Attack", color: "attack", counts: h0.attack }],
+      threshold: thr, logY: true, xLabel: "Score",
+      onThreshold: (t) => { thr = t; cm.update(confusion(data, t)); pr.update({ point: pointFor(t) }); },
+      ariaLabel: "Score distribution by class (sample data)",
+    });
+    $("logy").addEventListener("change", (e) => histo.update({ logY: e.target.checked }));
+
+    // ---- ROC with two models
+    const other = curves(sampleScores(1800, 90, 1.25));
+    const roc = curveChart($("c-roc"), {
+      kind: "roc",
+      series: [
+        { label: "Model A", color: "series-1", x: cv.roc.x, y: cv.roc.y, auc: cv.auc, thresholds: cv.roc.t },
+        { label: "Model B", color: "series-2", x: other.roc.x, y: other.roc.y, auc: other.auc, thresholds: other.roc.t },
+      ],
+      ariaLabel: "ROC curves for two models (sample data)",
+    });
+
+    // ---- bar chart with table toggle
+    const folds = ["russellmitchell", "santos", "harrison", "fox", "wheeler", "wardbeck", "wilson", "shaw"];
+    const foldRows = () => folds.map((id) => ({ id, ap: id === "shaw" ? 0.08 + rng.next() * 0.1 : 0.2 + rng.next() * 0.6, low: id === "shaw" }));
+    let fr = foldRows();
+    const mean = (rows) => { const v = rows.filter((r) => !r.low).map((r) => r.ap); return v.reduce((a, b) => a + b, 0) / v.length; };
+    const barOpts = (rows) => ({
+      bars: rows.map((r) => ({ label: r.id, value: r.ap, flagged: r.low, note: r.low ? "Low support: fewer than 20 test positives, excluded from the mean" : "" })),
+      yDomain: [0, 1], refLine: { value: mean(rows), label: `Mean ${mean(rows).toFixed(3)}` }, valueName: "AP",
+      flaggedLabel: "Low support (excluded from mean)", ariaLabel: "Average precision per held-out replica (sample data)",
+    });
+    const tableFor = (rows) => ({ columns: [{ key: "id", label: "Held-out replica" }, { key: "ap", label: "AP", num: true, format: (v) => v.toFixed(3) }, { key: "low", label: "Low support", format: (v) => (v ? "yes" : "no") }], rows: rows.map((r) => ({ ...r, _flagged: r.low })) });
+    const barT = withTableToggle($("c-bar"), { render: (el) => barChart(el, barOpts(fr)), table: tableFor(fr), title: "AP per fold" });
+
+    const hRows = () => [{ label: "TESSERA-base", value: 0.2 + rng.next() * 0.5 }, { label: "LightGBM", value: 0.1 + rng.next() * 0.5 }, { label: "Logistic regression", value: -0.05 - rng.next() * 0.1 }, { label: "Majority class", value: 0 }];
+    const barh = barChart($("c-barh"), { bars: hRows(), horizontal: true, yFormat: (v) => v.toFixed(2), valueName: "MCC", ariaLabel: "MCC by model (sample data)" });
+
+    // ---- stacked split bar
+    const splitSegs = (a, b, c) => [
+      { id: "train", label: "Train", value: a, color: "train" },
+      { id: "val", label: "Validation", value: b, color: "val" },
+      { id: "test", label: "Test", value: c, color: "test" },
+      { id: "unused", label: "Unused", value: 0, color: "unused" },
+    ];
+    const stack = stackedBar($("c-stack"), { segments: splitSegs(7100, 1250, 1650), ariaLabel: "Rows per split (sample data)" });
+    $("resplit").addEventListener("click", () => {
+      const a = 3000 + rng.int(5000), b = 500 + rng.int(1500), c = 800 + rng.int(2500), u = rng.bernoulli(0.5) ? rng.int(2000) : 0;
+      stack.update({ segments: [...splitSegs(a, b, c).slice(0, 3), { id: "unused", label: "Unused", value: u, color: "unused" }] });
+    });
+
+    // ---- ring + sparkline
+    const r1 = ring($("c-ring"), { value: cv.ap, label: cv.ap.toFixed(3), sublabel: "Average precision", ariaLabel: "Average precision (sample data)" });
+    const r2 = ring($("c-ring2"), { value: 0.62, label: "62%", sublabel: "Recall", color: "series-3", ariaLabel: "Recall (sample data)" });
+    const spark = sparkline($("c-spark"), { values: Array.from({ length: 24 }, () => rng.next()), label: "Sample trend", ariaLabel: "Sample trend" });
+
+    // ---- range chart (log)
+    const range = rangeChart($("c-range"), {
+      log: true, domain: [1e-6, 1e2], xLabel: "Reachable parameter value (log scale)",
+      intervals: [
+        { label: "Rate 0.001", from: 2e-6, to: 3e-4 },
+        { label: "Rate 0.01", from: 1e-5, to: 2e-3 },
+        { label: "Rate 0.1", from: 4e-5, to: 1.5e-2 },
+        { label: "Rate 1", from: 1e-4, to: 0.1 },
+      ],
+      markers: [{ label: "Optimum", value: 7 }, { label: "Domain min", value: 1e-6, color: "--text-3" }],
+      ariaLabel: "Reachable intervals versus the optimum (sample data)",
+    });
+
+    // ---- hidden-on-mount
+    const hidden = barChart($("c-hidden"), { bars: folds.map((id, i) => ({ label: id, value: (i + 1) * 120 + rng.int(300) })), valueName: "Windows", ariaLabel: "Windows per replica (sample data)" });
+    $("reveal").addEventListener("click", () => { $("hidden-wrap").hidden = !$("hidden-wrap").hidden; });
+
+    // ---- update all
+    $("update-all").addEventListener("click", () => {
+      data = sampleScores(1500 + rng.int(800), 60 + rng.int(80), 0.7 + rng.next() * 0.5);
+      cv = curves(data);
+      const hh = hist(data);
+      histo.update({ series: [{ label: "Benign", color: "benign", counts: hh.benign }, { label: "Attack", color: "attack", counts: hh.attack }] });
+      cm.update(confusion(data, thr));
+      pr.update({ series: [{ label: "Sample model", color: "series-1", x: cv.pr.x, y: cv.pr.y, auc: cv.ap, thresholds: cv.pr.t }], baseline: cv.P / (cv.P + cv.N), point: pointFor(thr) });
+      fr = foldRows();
+      barT.chart.update(barOpts(fr));
+      barT.update({ table: tableFor(fr) });
+      barh.update({ bars: hRows() });
+      line2.update(line2Opts());
+      r1.update({ value: cv.ap, label: cv.ap.toFixed(3) });
+      r2.update({ value: rng.next(), label: `${Math.round(rng.next() * 100)}%` });
+      spark.update({ values: Array.from({ length: 24 }, () => rng.next()) });
+      range.update({ markers: [{ label: "Optimum", value: 1 + rng.next() * 50 }, { label: "Domain min", value: 1e-6, color: "--text-3" }] });
+      hidden.update({ bars: folds.map((id, i) => ({ label: id, value: (i + 1) * 120 + rng.int(300) })) });
+      void roc;
+    });
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 The search space is one bounded integer, so the true optimum is computable. That
 turns every metaheuristic comparison from "which heuristic beat which" into a
 measured OPTIMALITY GAP against the actual best, which is the only comparison that
-settles anything. The base paper reports neither.
+settles anything, independent of any optimiser's own search strategy.
 """
 
 from __future__ import annotations

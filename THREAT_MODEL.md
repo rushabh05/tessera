@@ -1,9 +1,11 @@
 # Threat model
 
-The base paper makes no threat-model statement, which is why its ledger stores
+Many blockchain-logging designs conflate immutability with security and store raw
 source and destination IPs, geolocation and full request/response bodies on a shared
-immutable chain — a privacy liability presented as a privacy mechanism. This document
-states what the verdict transparency log does and, more importantly, what it does not.
+immutable chain — a privacy liability presented as a privacy mechanism. TESSERA
+states its threat model explicitly, which is why its ledger stores none of that. This
+document states what the verdict transparency log does and, more importantly, what
+it does not.
 
 ## Assets
 

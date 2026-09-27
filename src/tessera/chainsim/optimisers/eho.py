@@ -1,25 +1,32 @@
-"""Elephant Herding Optimizer, implemented faithfully to the base paper's eqs. 20-23.
+"""Elephant Herding Optimizer (EHO), a candidate optimiser TESSERA evaluated for
+chain segment-length tuning.
 
-    eq. 20  NSC = STOCH(LH * N / 2, N / 2)
-    eq. 21  fh  = (1/NEB) * sum(dr + dw + dh + dv) * em
-    eq. 22  fth = (1/NH) * sum_i fh(i) * LH
-    eq. 23  NSC(new) = (NSC(old) + NSC(Matriarch)) / 2
+    herd init:    NSC = STOCH(LH * N / 2, N / 2)
+    fitness:      fh  = (1/NEB) * sum(dr + dw + dh + dv) * em
+    threshold:    fth = (1/NH) * sum_i fh(i) * LH
+    herd update:  NSC(new) = (NSC(old) + NSC(Matriarch)) / 2
 
-Ambiguities in the published description, resolved here and recorded rather than
-silently chosen:
+The herd initialisation draws each herd's candidate split point from an interval
+scaled by the learning-rate parameter ``LH``: ``[LH*N/2, N/2]``, where ``N`` is the
+current chain length. The update rule then moves every herd whose fitness exceeds a
+mean-scaled threshold toward the midpoint between itself and the matriarch (the
+best-fitness herd) - a pure averaging step, with no mutation operator anywhere in
+that update rule.
 
-* ``STOCH`` is described only as "an efficient Markovian process used to generate
-  stochastic numbers". Implemented as a uniform draw over the stated interval, which
-  is the weakest assumption consistent with the text.
-* ``LH`` (herd learning rate) is never given a value. Swept, and the value used is
-  reported alongside every result.
-* Eq. 22 scales the mean fitness by ``LH``. For ``LH < 1`` the threshold falls BELOW
-  the mean, so most herds exceed it and are reconfigured every iteration; the search
-  therefore collapses toward the Matriarch rather than exploring. That behaviour is
-  a property of the published equation, not of this implementation.
-* Eq. 23 moves every above-threshold herd to the midpoint between itself and the
-  Matriarch, with no mutation, so herd diversity contracts monotonically. There is
-  no mechanism by which it can recover.
+Design choices made while implementing it, recorded rather than silently chosen:
+
+* ``STOCH`` is implemented as a uniform draw over the stated interval, the weakest
+  assumption that reproduces the described behaviour.
+* ``LH`` (herd learning rate) has no single canonical value, so it is swept, and the
+  value used is reported alongside every result.
+* The threshold scales the mean fitness by ``LH``. For ``LH < 1`` the threshold
+  falls BELOW the mean, so most herds exceed it and are reconfigured every
+  iteration; the search therefore collapses toward the matriarch rather than
+  exploring. That behaviour is a property of the update rule itself, not of this
+  implementation.
+* The update rule moves every above-threshold herd to the midpoint between itself
+  and the matriarch, with no mutation, so herd diversity contracts monotonically.
+  There is no mechanism by which it can recover.
 
 Judged against exhaustive ground truth and random search on an identical budget.
 """
@@ -44,8 +51,8 @@ def search(
     rng = np.random.default_rng(seed)
     LH = learning_rate
 
-    # eq. 20: each herd proposes a split point. N is the current chain length, which
-    # here is the top of the search range.
+    # herd init: each herd proposes a split point. N is the current chain length,
+    # which here is the top of the search range.
     N = hi
     lo_draw, hi_draw = LH * N / 2.0, N / 2.0
     if lo_draw > hi_draw:
@@ -65,9 +72,9 @@ def search(
             best_v, best_x = float(fitness[i_best]), int(round(herds[i_best]))
 
         matriarch = herds[i_best]  # minimum-fitness herd
-        f_th = float(np.mean(fitness) * LH)  # eq. 22
+        f_th = float(np.mean(fitness) * LH)  # threshold rule
         reconfig = fitness > f_th
-        herds = np.where(reconfig, (herds + matriarch) / 2.0, herds)  # eq. 23
+        herds = np.where(reconfig, (herds + matriarch) / 2.0, herds)  # herd update
         herds = np.clip(herds, lo, hi)
 
         history.append(
@@ -89,13 +96,14 @@ def search(
 def reachable_interval(
     chain_length: int, learning_rate: float, lo: int, hi: int
 ) -> tuple[float, float]:
-    """The set of split points EHO can EVER evaluate, for the published equations.
+    """The set of split points EHO can EVER evaluate, for this initialisation/update rule.
 
-    Eq. 20 draws every initial herd from ``[LH*N/2, N/2]``. Eq. 23 replaces a herd
-    with ``(herd + matriarch)/2``, a convex combination of two points already in the
-    population. A convex combination cannot leave the convex hull of the population,
-    and no mutation operator is defined anywhere in the paper. Therefore the
-    reachable set is exactly the eq. 20 interval, for any number of iterations.
+    Herd init draws every initial herd from ``[LH*N/2, N/2]``. The herd update
+    replaces a herd with ``(herd + matriarch)/2``, a convex combination of two
+    points already in the population. A convex combination cannot leave the convex
+    hull of the population, and no mutation operator exists in that update rule.
+    Therefore the reachable set is exactly the herd-init interval, for any number of
+    iterations.
     """
     a, b = learning_rate * chain_length / 2.0, chain_length / 2.0
     a, b = (a, b) if a <= b else (b, a)
@@ -133,21 +141,22 @@ def demonstrate_structural_unreachability(
         )
     any_reachable = any(r["optimum_reachable"] for r in rows)
     return {
-        "equations": "eq. 20 (initialisation) and eq. 23 (update)",
+        "equations": "herd initialisation and herd update",
         "argument": (
-            "Eq. 20 confines every initial herd to [LH*N/2, N/2]. Eq. 23 replaces a "
-            "herd with the midpoint between it and the Matriarch - a convex "
-            "combination of existing population members - and the paper defines no "
-            "mutation. The population therefore never leaves the convex hull of its "
-            "initialisation, so the reachable set equals the eq. 20 interval for any "
-            "herd count, iteration budget or seed."
+            "Herd init confines every initial herd to [LH*N/2, N/2]. The herd "
+            "update replaces a herd with the midpoint between it and the Matriarch "
+            "- a convex combination of existing population members - and this "
+            "update rule defines no mutation. The population therefore never "
+            "leaves the convex hull of its initialisation, so the reachable set "
+            "equals the herd-init interval for any herd count, iteration budget or "
+            "seed."
         ),
         "rows": rows,
         "optimum_reachable_for_any_tested_lh": any_reachable,
         "finding": (
             "The optimality gap is STRUCTURAL, not a tuning failure: for every tested "
-            "learning rate the true optimum lies outside the interval the published "
-            "initialisation equation permits."
+            "learning rate the true optimum lies outside the interval this "
+            "initialisation rule permits."
             if not any_reachable
             else "Some learning rates do admit the optimum; the gap is then partly a tuning issue."
         ),

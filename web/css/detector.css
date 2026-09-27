@@ -1,0 +1,267 @@
+/* Live Detector tab: the original demo (window list, live inference, ledger),
+   restyled onto the shared tokens. Class names are the ones js/main.js uses. */
+
+.detector-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 960px) {
+  .detector-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.model-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#window-list {
+  max-height: 520px;
+  overflow-y: auto;
+  display: grid;
+  gap: 3px;
+  margin: 0 -6px;
+  padding: 0 6px;
+  scrollbar-width: thin;
+}
+.window-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  padding: 9px 11px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: background-color var(--dur-1) var(--ease), border-color var(--dur-2) var(--ease),
+    transform var(--dur-1) var(--ease);
+  animation: fadeUp var(--dur-3) var(--ease) both;
+}
+.window-row:hover {
+  background: var(--surface-2);
+}
+.window-row:active {
+  transform: scale(0.99);
+}
+.window-row.selected {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: var(--accent-soft);
+}
+.w-main {
+  display: grid;
+  min-width: 0;
+}
+.w-host {
+  font-weight: 600;
+  font-size: 0.84rem;
+}
+.w-id {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.w-meter {
+  width: 64px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.w-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width var(--dur-3) var(--ease);
+}
+.w-score {
+  font-weight: 650;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  min-width: 3.6em;
+}
+.w-truth {
+  font-size: 0.68rem;
+}
+
+.score-low {
+  --score: var(--good);
+}
+.score-mid {
+  --score: var(--warning);
+}
+.score-high {
+  --score: var(--critical);
+}
+.w-meter > span {
+  background: var(--score, var(--accent));
+}
+
+#detail-empty,
+#merkle-empty {
+  color: var(--text-2);
+  font-size: 0.9rem;
+}
+#detail-content,
+#merkle-content {
+  display: grid;
+  gap: 14px;
+}
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.score-gauge {
+  position: relative;
+  width: 116px;
+  height: 116px;
+  flex: none;
+}
+.score-gauge svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.score-gauge .track {
+  stroke: var(--surface-3);
+}
+.score-gauge .arc {
+  stroke: var(--score, var(--accent));
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--dur-4) var(--ease), stroke var(--dur-2);
+}
+.score-gauge .gauge-center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+.detail-score-big {
+  font-size: 1.55rem;
+  font-weight: 720;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.verdict-ok,
+.verdict-bad {
+  font-weight: 650;
+}
+.verdict-ok {
+  color: var(--good-ink);
+}
+.verdict-bad {
+  color: var(--critical-ink);
+}
+
+.attr-row {
+  display: grid;
+  grid-template-columns: 10.5rem minmax(0, 1fr) 3.6rem;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.86rem;
+  padding: 4px 0;
+}
+@media (max-width: 520px) {
+  .attr-row {
+    grid-template-columns: 8.5rem minmax(0, 1fr) 3.2rem;
+  }
+}
+.attr-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  cursor: pointer;
+}
+.attr-bar-track {
+  height: 10px;
+  background: var(--surface-3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.attr-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width var(--dur-3) var(--ease);
+}
+.attr-row:nth-child(1) .attr-bar-fill {
+  background: var(--series-1);
+}
+.attr-row:nth-child(2) .attr-bar-fill {
+  background: var(--series-2);
+}
+.attr-row:nth-child(3) .attr-bar-fill {
+  background: var(--series-3);
+}
+.attr-row:nth-child(4) .attr-bar-fill {
+  background: var(--series-7);
+}
+.attr-pct {
+  text-align: right;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.caveat {
+  font-size: 0.8rem;
+  color: var(--text-2);
+  border-left: 3px solid var(--warning);
+  background: var(--warning-soft);
+  border-radius: 0 8px 8px 0;
+  padding: 8px 12px;
+}
+#parity-note {
+  font-size: 0.8rem;
+  color: var(--good-ink);
+  background: var(--good-soft);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.field-row input[type="text"] {
+  width: 8.5rem;
+  font-family: var(--mono);
+}
+#inclusion-result,
+#tamper-result {
+  font-size: 0.86rem;
+  animation: fadeUp var(--dur-3) var(--ease) both;
+}
+#tamper-result {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+#tamper-result code {
+  color: var(--text-2);
+}
+.hash {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--text-2);
+  word-break: break-all;
+}

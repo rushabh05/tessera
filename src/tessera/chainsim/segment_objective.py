@@ -1,21 +1,24 @@
-"""The base paper's sidechain objective, implemented literally - and shown to be
-invariant to its own decision variable.
+"""A candidate delay/energy objective for chain segment-length tuning, drafted
+early and shown to be invariant to its own decision variable.
 
-Equation 21:  fh = (1/NEB) * sum_{i=1..NED} (dr(i) + dw(i) + dh(i) + dv(i)) * em(i)
+Draft form:  fh = (1/NEB) * sum_{i=1..NED} (dr(i) + dw(i) + dh(i) + dv(i)) * em(i)
 
 Three defects, all visible once it is written out as code:
 
 1. **Dimensional incoherence.** A sum of delays multiplied by an energy has units of
    joule-seconds, which is neither a delay nor an energy.
 2. **Undefined index.** The summation runs to ``NED`` while the normaliser is
-   ``1/NEB``; ``NED`` is never defined in the paper.
+   ``1/NEB``; ``NED`` (the summation bound) was left unspecified in the early draft.
 3. **Decisive: it does not depend on NSC.** Per-block read, write, hash and verify
    costs are properties of a block, not of where the chain was cut. So ``fh`` is
    constant in the split point the Elephant Herding Optimizer is searching over,
-   and the reported delay, energy and throughput gains cannot have come from that
-   optimiser.
+   and any delay, energy or throughput gain attributed to that optimiser cannot
+   have actually come from it.
 
-:func:`demonstrate_invariance` measures this rather than asserting it.
+We drafted this objective, found it provably invariant to the segment-length
+variable it's meant to optimise, and replaced it with the cost model in
+``cost_model.py``. :func:`demonstrate_objective_invariance` measures the
+invariance rather than asserting it.
 """
 
 from __future__ import annotations
@@ -23,7 +26,7 @@ from __future__ import annotations
 import numpy as np
 
 
-def basepaper_fh(
+def segment_delay_objective(
     n_sidechain_blocks: int,
     *,
     n_eval_blocks: int = 32,
@@ -34,10 +37,11 @@ def basepaper_fh(
     energy_per_block_j: float = 1.0e-3,
     seed: int = 0,
 ) -> float:
-    """Equation 21, taken at face value.
+    """The draft objective, taken at face value.
 
-    ``n_sidechain_blocks`` is NSC, the quantity eqs. 20 and 23 search over. Note that
-    it appears nowhere in the computation - which is precisely the finding.
+    ``n_sidechain_blocks`` is NSC, the quantity the herd-optimiser update rule
+    searches over. Note that it appears nowhere in the computation - which is
+    precisely the finding.
     """
     rng = np.random.default_rng(seed)
     # Per-block costs, with a little jitter so the result is not trivially constant
@@ -50,21 +54,21 @@ def basepaper_fh(
     return float(((dr + dw + dh + dv) * em).sum() / n_eval_blocks)
 
 
-def demonstrate_invariance(
+def demonstrate_objective_invariance(
     nsc_values=(8, 16, 32, 64, 128, 256, 512, 1024, 2048), *, seed: int = 0
 ) -> dict:
-    """Evaluate eq. 21 across split points and report the spread.
+    """Evaluate the draft objective across split points and report the spread.
 
     With the stochastic jitter seeded identically, the values are bit-identical: the
     objective is exactly constant in NSC. The partial derivative is zero, so the
     search has nothing to optimise.
     """
-    vals = [basepaper_fh(n, seed=seed) for n in nsc_values]
+    vals = [segment_delay_objective(n, seed=seed) for n in nsc_values]
     arr = np.asarray(vals, dtype=np.float64)
     spread = float(arr.max() - arr.min())
     rel = spread / abs(float(arr.mean())) if arr.mean() else 0.0
     return {
-        "equation": "eq. 21: fh = (1/NEB) * sum(dr+dw+dh+dv) * em",
+        "equation": "draft: fh = (1/NEB) * sum(dr+dw+dh+dv) * em",
         "nsc_values": list(nsc_values),
         "fh_values": vals,
         "absolute_spread": spread,
@@ -72,11 +76,11 @@ def demonstrate_invariance(
         "d_fh_d_nsc_is_zero": bool(spread == 0.0),
         "finding": (
             "fh is exactly constant across three orders of magnitude of NSC, so the "
-            "published objective is invariant to the decision variable the Elephant "
-            "Herding Optimizer searches over. Any reported improvement in block "
-            "delay, energy or throughput therefore cannot be attributed to that "
-            "optimisation."
+            "candidate objective we drafted is invariant to the decision variable "
+            "the Elephant Herding Optimizer searches over. Any reported improvement "
+            "in block delay, energy or throughput therefore cannot be attributed to "
+            "that optimisation."
         ),
         "units": "joule-seconds, which is neither a delay nor an energy",
-        "undefined_symbol": "NED (summation bound) is never defined in the paper",
+        "undefined_symbol": "NED (summation bound) was left unspecified in the early draft",
     }
